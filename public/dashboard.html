@@ -122,6 +122,21 @@
             background: #0051d4;
         }
         
+        .onedrive-connect-btn, .onedrive-upload-btn, .onedrive-list-btn {
+            background: #0078d4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .onedrive-connect-btn:hover, .onedrive-upload-btn:hover, .onedrive-list-btn:hover {
+            background: #106ebe;
+        }
+        
         .disconnect-btn {
             background: #dc3545;
             color: white;
@@ -287,18 +302,34 @@
                 </div>
             </div>
             
-            <!-- Placeholder for other cloud services -->
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-title">
                         <svg class="service-icon" viewBox="0 0 24 24" fill="#0078d4">
-                            <path d="M24 12c0-6.628-5.372-12-12S0 5.372 0 12s5.372 12 12 12 12-5.372 12-12z"/>
+                            <path d="M12 1.25c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10z"/>
                         </svg>
                         OneDrive
                     </div>
-                    <span class="status-badge status-disconnected">Coming Soon</span>
+                    <span id="onedriveStatus" class="status-badge status-disconnected">Disconnected</span>
                 </div>
-                <p style="color: #718096; text-align: center; margin: 20px 0;">Microsoft OneDrive integration will be available soon.</p>
+                
+                <div id="onedriveActions">
+                    <button id="onedriveConnectBtn" class="onedrive-connect-btn" onclick="connectOneDrive()">Connect to OneDrive</button>
+                    <button id="onedriveDisconnectBtn" class="disconnect-btn" onclick="disconnectOneDrive()" style="display: none;">Disconnect</button>
+                </div>
+                
+                <div id="onedriveFileOps" style="display: none;">
+                    <div class="file-upload">
+                        <input type="file" id="onedriveFileInput" class="file-input" onchange="uploadToOneDrive()">
+                        <button class="onedrive-upload-btn" onclick="document.getElementById('onedriveFileInput').click()">
+                            📁 Upload File
+                        </button>
+                        <button class="onedrive-list-btn" onclick="listOneDriveFiles()">
+                            📋 List Files
+                        </button>
+                    </div>
+                    <div id="onedriveFileList" class="file-list" style="display: none;"></div>
+                </div>
             </div>
         </div>
     </div>
