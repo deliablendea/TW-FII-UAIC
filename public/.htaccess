@@ -1,0 +1,23 @@
+RewriteEngine On
+
+# Allow access to static files (CSS, JS, images)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Allow access to existing directories
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Handle API routes - don't rewrite them
+RewriteCond %{REQUEST_URI} ^.*/(api|services|controllers|models|config|views|db)/.*$
+RewriteRule ^ - [L]
+
+# Handle HTML files - don't rewrite them
+RewriteCond %{REQUEST_URI} \.(html|php)$
+RewriteRule ^ - [L]
+
+# Default route - redirect to index.php for other requests (but exclude API paths)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^.*/(api|services|controllers|models|config|views|db)/.*$
+RewriteRule ^(.*)$ index.php [L] 

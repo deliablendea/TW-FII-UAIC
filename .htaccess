@@ -1,0 +1,5 @@
+# Simple .htaccess - no redirects, just basic settings
+RewriteEngine On
+
+# Allow access to all files and directories
+Options +Indexes +FollowSymLinks 
