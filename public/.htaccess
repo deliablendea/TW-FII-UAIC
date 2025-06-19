@@ -8,11 +8,16 @@ RewriteRule ^ - [L]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
-# Handle API routes
-RewriteCond %{REQUEST_URI} ^/api/
+# Handle API routes - don't rewrite them
+RewriteCond %{REQUEST_URI} ^.*/(api|services|controllers|models|config|views|db)/.*$
 RewriteRule ^ - [L]
 
-# Default route - redirect to index.php for other requests
+# Handle HTML files - don't rewrite them
+RewriteCond %{REQUEST_URI} \.(html|php)$
+RewriteRule ^ - [L]
+
+# Default route - redirect to index.php for other requests (but exclude API paths)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^.*/(api|services|controllers|models|config|views|db)/.*$
 RewriteRule ^(.*)$ index.php [L] 

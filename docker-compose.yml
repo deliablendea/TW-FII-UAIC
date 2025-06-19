@@ -1,0 +1,25 @@
+version: '3.8'
+
+name: Web
+services:
+  postgres-connectcampus:
+    image: postgres:latest
+    container_name: TW_postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      PGDATA: /data/postgres
+    volumes:
+      -  TW-db-data:/data/postgres
+    ports:
+      - "6433:5432"
+    restart: unless-stopped
+
+    networks:
+      - webapi_network
+
+networks:
+  webapi_network:
+
+volumes:
+  TW-db-data:

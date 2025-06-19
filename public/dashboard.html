@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Vanilla App</title>
+    <title>Cloud Storage Dashboard - Modular File Manager</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .dashboard-container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 40px 20px;
         }
         
         .welcome-card {
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -40,50 +40,237 @@
         .logout-btn:hover {
             background: #c53030;
         }
+        
+        .cloud-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .service-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .service-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .service-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5em;
+            font-weight: 600;
+        }
+        
+        .service-icon {
+            width: 32px;
+            height: 32px;
+        }
+        
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .status-connected {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .status-disconnected {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .connect-btn, .upload-btn, .list-btn {
+            background: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .connect-btn:hover, .upload-btn:hover, .list-btn:hover {
+            background: #3367d6;
+        }
+        
+        .disconnect-btn {
+            background: #dc3545;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .disconnect-btn:hover {
+            background: #c82333;
+        }
+        
+        .file-upload {
+            margin: 20px 0;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .file-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .file-item {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item:last-child {
+            border-bottom: none;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .file-details {
+            font-size: 0.8em;
+            color: #718096;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #718096;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        
+        .alert-info {
+            background: #bee3f8;
+            color: #2c5282;
+            border: 1px solid #90cdf4;
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <div class="welcome-card">
-            <h1>Welcome to Your Dashboard</h1>
+            <h1>Cloud Storage Dashboard</h1>
+            <p>Modular File Management System</p>
             <div class="user-info">
                 <p>Logged in as: <span id="userName"></span></p>
                 <p>Email: <span id="userEmail"></span></p>
             </div>
             <button class="logout-btn" onclick="logout()">Logout</button>
         </div>
+        
+        <div id="alerts"></div>
+        
+        <div class="cloud-services">
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <svg class="service-icon" viewBox="0 0 24 24" fill="#4285f4">
+                            <path d="M6.28 3l5.55 9.5L18.09 3h1.8L13.77 12.5l6.12 10.5h-1.8l-5.55-9.5L6.28 24H4.48l6.12-10.5L4.48 3h1.8z"/>
+                        </svg>
+                        Google Drive
+                    </div>
+                    <span id="googleStatus" class="status-badge status-disconnected">Disconnected</span>
+                </div>
+                
+                <div id="googleActions">
+                    <button id="googleConnectBtn" class="connect-btn" onclick="connectGoogle()">Connect to Google Drive</button>
+                    <button id="googleDisconnectBtn" class="disconnect-btn" onclick="disconnectGoogle()" style="display: none;">Disconnect</button>
+                </div>
+                
+                <div id="googleFileOps" style="display: none;">
+                    <div class="file-upload">
+                        <input type="file" id="googleFileInput" class="file-input" onchange="uploadToGoogle()">
+                        <button class="upload-btn" onclick="document.getElementById('googleFileInput').click()">
+                            📁 Upload File
+                        </button>
+                        <button class="list-btn" onclick="listGoogleFiles()">
+                            📋 List Files
+                        </button>
+                    </div>
+                    <div id="googleFileList" class="file-list" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <!-- Placeholder for other cloud services -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <svg class="service-icon" viewBox="0 0 24 24" fill="#0078d4">
+                            <path d="M24 12c0-6.628-5.372-12-12-12S0 5.372 0 12s5.372 12 12 12 12-5.372 12-12z"/>
+                        </svg>
+                        OneDrive
+                    </div>
+                    <span class="status-badge status-disconnected">Coming Soon</span>
+                </div>
+                <p style="color: #718096; text-align: center; margin: 20px 0;">Microsoft OneDrive integration will be available soon.</p>
+            </div>
+            
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <svg class="service-icon" viewBox="0 0 24 24" fill="#0061ff">
+                            <path d="M12 0L0 7l12 5 12-5-12-7z"/>
+                            <path d="M0 12l12 5 12-5"/>
+                            <path d="M0 17l12 5 12-5"/>
+                        </svg>
+                        Dropbox
+                    </div>
+                    <span class="status-badge status-disconnected">Coming Soon</span>
+                </div>
+                <p style="color: #718096; text-align: center; margin: 20px 0;">Dropbox integration will be available soon.</p>
+            </div>
+        </div>
     </div>
     
-    <script>
-        // Check if user is logged in
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch('../api/auth/session.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById('userName').textContent = data.user.name;
-                        document.getElementById('userEmail').textContent = data.user.email;
-                    } else {
-                        window.location.href = 'login.html';
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    window.location.href = 'login.html';
-                });
-        });
-        
-        function logout() {
-            fetch('../api/auth/logout.php', { method: 'POST' })
-                .then(response => response.json())
-                .then(data => {
-                    window.location.href = 'login.html';
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    window.location.href = 'login.html';
-                });
-        }
-    </script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html> 
