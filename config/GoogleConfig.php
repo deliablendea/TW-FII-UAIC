@@ -1,8 +1,6 @@
 <?php
 class GoogleConfig {
     // Google OAuth 2.0 configuration
-    const CLIENT_ID = 'womp1';
-    const CLIENT_SECRET = 'womp2';
     const REDIRECT_URI = 'http://localhost/TW-FII-UAIC/api/oauth/google/callback.php';
     
     // Google OAuth 2.0 endpoints
