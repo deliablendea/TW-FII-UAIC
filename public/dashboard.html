@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cloud Storage Dashboard - Modular File Manager</title>
+    <title>cloud9</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .dashboard-container {
@@ -105,6 +105,21 @@
         
         .connect-btn:hover, .upload-btn:hover, .list-btn:hover {
             background: #3367d6;
+        }
+        
+        .dropbox-connect-btn, .dropbox-upload-btn, .dropbox-list-btn {
+            background: #0061ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin: 5px;
+        }
+        
+        .dropbox-connect-btn:hover, .dropbox-upload-btn:hover, .dropbox-list-btn:hover {
+            background: #0051d4;
         }
         
         .disconnect-btn {
@@ -240,20 +255,6 @@
                 </div>
             </div>
             
-            <!-- Placeholder for other cloud services -->
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-title">
-                        <svg class="service-icon" viewBox="0 0 24 24" fill="#0078d4">
-                            <path d="M24 12c0-6.628-5.372-12-12-12S0 5.372 0 12s5.372 12 12 12 12-5.372 12-12z"/>
-                        </svg>
-                        OneDrive
-                    </div>
-                    <span class="status-badge status-disconnected">Coming Soon</span>
-                </div>
-                <p style="color: #718096; text-align: center; margin: 20px 0;">Microsoft OneDrive integration will be available soon.</p>
-            </div>
-            
             <div class="service-card">
                 <div class="service-header">
                     <div class="service-title">
@@ -264,9 +265,40 @@
                         </svg>
                         Dropbox
                     </div>
+                    <span id="dropboxStatus" class="status-badge status-disconnected">Disconnected</span>
+                </div>
+                
+                <div id="dropboxActions">
+                    <button id="dropboxConnectBtn" class="dropbox-connect-btn" onclick="connectDropbox()">Connect to Dropbox</button>
+                    <button id="dropboxDisconnectBtn" class="disconnect-btn" onclick="disconnectDropbox()" style="display: none;">Disconnect</button>
+                </div>
+                
+                <div id="dropboxFileOps" style="display: none;">
+                    <div class="file-upload">
+                        <input type="file" id="dropboxFileInput" class="file-input" onchange="uploadToDropbox()">
+                        <button class="dropbox-upload-btn" onclick="document.getElementById('dropboxFileInput').click()">
+                            📁 Upload File
+                        </button>
+                        <button class="dropbox-list-btn" onclick="listDropboxFiles()">
+                            📋 List Files
+                        </button>
+                    </div>
+                    <div id="dropboxFileList" class="file-list" style="display: none;"></div>
+                </div>
+            </div>
+            
+            <!-- Placeholder for other cloud services -->
+            <div class="service-card">
+                <div class="service-header">
+                    <div class="service-title">
+                        <svg class="service-icon" viewBox="0 0 24 24" fill="#0078d4">
+                            <path d="M24 12c0-6.628-5.372-12-12S0 5.372 0 12s5.372 12 12 12 12-5.372 12-12z"/>
+                        </svg>
+                        OneDrive
+                    </div>
                     <span class="status-badge status-disconnected">Coming Soon</span>
                 </div>
-                <p style="color: #718096; text-align: center; margin: 20px 0;">Dropbox integration will be available soon.</p>
+                <p style="color: #718096; text-align: center; margin: 20px 0;">Microsoft OneDrive integration will be available soon.</p>
             </div>
         </div>
     </div>

@@ -39,4 +39,8 @@ class Database {
         throw new Exception("Cannot unserialize singleton");
     }
 }
+
+// Create the global $pdo variable that the rest of the code expects
+$database = Database::getInstance();
+$pdo = $database->getConnection();
 ?> 

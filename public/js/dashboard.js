@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard loading...');
     checkUserSession();
     checkGoogleDriveStatus();
+    checkDropboxStatus();
     handleOAuthCallback();
 });
 
@@ -214,20 +215,190 @@ function displayGoogleFiles(files) {
     fileList.innerHTML = html;
 }
 
+// Dropbox Functions
+function checkDropboxStatus() {
+    console.log('Checking Dropbox status...');
+    fetch('../api/oauth/dropbox/status.php')
+        .then(response => {
+            console.log('Dropbox status response:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dropbox status data:', data);
+            if (data.success && data.connected) {
+                updateDropboxUI(true);
+            } else {
+                updateDropboxUI(false);
+            }
+        })
+        .catch(error => {
+            console.error('Dropbox status check error:', error);
+            updateDropboxUI(false);
+        });
+}
+
+function updateDropboxUI(connected) {
+    const statusBadge = document.getElementById('dropboxStatus');
+    const connectBtn = document.getElementById('dropboxConnectBtn');
+    const disconnectBtn = document.getElementById('dropboxDisconnectBtn');
+    const fileOps = document.getElementById('dropboxFileOps');
+    
+    if (connected) {
+        statusBadge.textContent = 'Connected';
+        statusBadge.className = 'status-badge status-connected';
+        connectBtn.style.display = 'none';
+        disconnectBtn.style.display = 'inline-block';
+        fileOps.style.display = 'block';
+    } else {
+        statusBadge.textContent = 'Disconnected';
+        statusBadge.className = 'status-badge status-disconnected';
+        connectBtn.style.display = 'inline-block';
+        disconnectBtn.style.display = 'none';
+        fileOps.style.display = 'none';
+    }
+}
+
+function connectDropbox() {
+    console.log('Connecting to Dropbox...');
+    window.location.href = '../api/oauth/dropbox/authorize.php';
+}
+
+function disconnectDropbox() {
+    if (confirm('Are you sure you want to disconnect Dropbox?')) {
+        fetch('../api/oauth/dropbox/disconnect.php', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('Dropbox disconnected successfully', 'success');
+                updateDropboxUI(false);
+                document.getElementById('dropboxFileList').style.display = 'none';
+            } else {
+                showAlert('Failed to disconnect Dropbox: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Dropbox disconnect error:', error);
+            showAlert('Error disconnecting Dropbox', 'error');
+        });
+    }
+}
+
+function uploadToDropbox() {
+    const fileInput = document.getElementById('dropboxFileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showAlert('Please select a file to upload', 'error');
+        return;
+    }
+    
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit for Dropbox
+        showAlert('File is too large (max 50MB)', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    showAlert('Uploading file to Dropbox...', 'info');
+    
+    fetch('../api/dropbox/upload.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${data.file.name}" uploaded successfully to Dropbox`, 'success');
+            fileInput.value = ''; // Clear the input
+            // Refresh file list if it's currently displayed
+            const fileList = document.getElementById('dropboxFileList');
+            if (fileList.style.display !== 'none') {
+                listDropboxFiles();
+            }
+        } else {
+            showAlert('Upload failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showAlert('Upload failed: Network error', 'error');
+    });
+}
+
+function listDropboxFiles() {
+    const fileList = document.getElementById('dropboxFileList');
+    fileList.innerHTML = '<div class="loading">Loading files...</div>';
+    fileList.style.display = 'block';
+    
+    fetch('../api/dropbox/list.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayDropboxFiles(data.files);
+            } else {
+                fileList.innerHTML = `<div class="loading">Error: ${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error('List files error:', error);
+            fileList.innerHTML = '<div class="loading">Error loading files</div>';
+        });
+}
+
+function displayDropboxFiles(files) {
+    const fileList = document.getElementById('dropboxFileList');
+    
+    if (!files || files.length === 0) {
+        fileList.innerHTML = '<div class="loading">No files found</div>';
+        return;
+    }
+    
+    let html = '';
+    files.forEach(file => {
+        const size = file.size ? formatFileSize(parseInt(file.size)) : 'Unknown size';
+        const modifiedDate = file.modified ? new Date(file.modified).toLocaleDateString() : 'Unknown date';
+        const fileTypeIcon = file.type === 'folder' ? '📁' : '📄';
+        
+        html += `
+            <div class="file-item">
+                <div class="file-info">
+                    <div class="file-name">${fileTypeIcon} ${escapeHtml(file.name)}</div>
+                    <div class="file-details">
+                        Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
+                        <br>Path: ${escapeHtml(file.path)}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    fileList.innerHTML = html;
+}
+
 function handleOAuthCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const oauthStatus = urlParams.get('oauth');
+    const provider = urlParams.get('provider');
     const reason = urlParams.get('reason');
     
-    console.log('OAuth callback status:', oauthStatus, 'reason:', reason);
+    console.log('OAuth callback status:', oauthStatus, 'provider:', provider, 'reason:', reason);
     
     if (oauthStatus === 'success') {
-        showAlert('Google Drive connected successfully!', 'success');
-        checkGoogleDriveStatus();
+        if (provider === 'google') {
+            showAlert('Google Drive connected successfully!', 'success');
+            checkGoogleDriveStatus();
+        } else if (provider === 'dropbox') {
+            showAlert('Dropbox connected successfully!', 'success');
+            checkDropboxStatus();
+        }
         // Remove the query parameter from URL
         window.history.replaceState({}, document.title, window.location.pathname);
     } else if (oauthStatus === 'error') {
-        let errorMessage = 'Failed to connect to Google Drive';
+        let providerName = provider === 'dropbox' ? 'Dropbox' : 'Google Drive';
+        let errorMessage = `Failed to connect to ${providerName}`;
         if (reason) {
             switch(reason) {
                 case 'invalid_state':
@@ -242,7 +413,7 @@ function handleOAuthCallback() {
                 case 'token_save':
                     errorMessage += ': Failed to save token';
                     break;
-                case 'exception':
+                case 'server_error':
                     errorMessage += ': Internal error occurred';
                     break;
                 default:
