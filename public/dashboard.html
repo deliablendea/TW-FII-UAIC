@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/styles.css">
     <style>
         .dashboard-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 40px 20px;
         }
@@ -41,6 +41,260 @@
             background: #c53030;
         }
         
+        /* Fragmentation System Styles */
+        .fragmentation-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+        }
+        
+        .fragmentation-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .fragmentation-title {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .fragmentation-subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-ok { 
+            border-color: #48bb78; 
+            background: rgba(72, 187, 120, 0.2);
+        }
+        
+        .status-warning { 
+            border-color: #ed8936; 
+            background: rgba(237, 137, 54, 0.2);
+        }
+        
+        .status-error { 
+            border-color: #f56565; 
+            background: rgba(245, 101, 101, 0.2);
+        }
+        
+        .upload-section {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .upload-section:hover { 
+            border-color: rgba(255, 255, 255, 0.6); 
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .upload-section.dragover { 
+            border-color: #48bb78; 
+            background: rgba(72, 187, 120, 0.2);
+            transform: scale(1.02);
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn:hover { 
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:disabled { 
+            background: rgba(255, 255, 255, 0.1); 
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-danger { 
+            background: rgba(245, 101, 101, 0.8);
+            border-color: #f56565;
+        }
+        
+        .btn-danger:hover { 
+            background: rgba(229, 62, 62, 0.9);
+        }
+        
+        .btn-success { 
+            background: rgba(72, 187, 120, 0.8);
+            border-color: #48bb78;
+        }
+        
+        .btn-success:hover { 
+            background: rgba(56, 161, 105, 0.9);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control option {
+            background: #4a5568;
+            color: white;
+        }
+        
+        .files-list {
+            margin-top: 30px;
+        }
+        
+        .file-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .file-info h4 {
+            margin: 0 0 10px 0;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .file-meta {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #48bb78, #38a169);
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+        
+        .provider-status {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .provider {
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .provider.connected { 
+            background: rgba(72, 187, 120, 0.8); 
+            color: white;
+            box-shadow: 0 3px 10px rgba(72, 187, 120, 0.3);
+        }
+        
+        .provider.disconnected { 
+            background: rgba(245, 101, 101, 0.8); 
+            color: white;
+            box-shadow: 0 3px 10px rgba(245, 101, 101, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .error {
+            color: #fed7d7;
+            background: rgba(245, 101, 101, 0.2);
+            border: 1px solid rgba(245, 101, 101, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        .success {
+            color: #c6f6d5;
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+        
+        /* Cloud Services Grid */
         .cloud-services {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -53,6 +307,12 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
         }
         
         .service-header {
@@ -168,7 +428,7 @@
             margin-top: 20px;
         }
         
-        .file-item {
+        .service-file-item {
             padding: 15px;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
@@ -176,11 +436,11 @@
             align-items: center;
         }
         
-        .file-item:last-child {
+        .service-file-item:last-child {
             border-bottom: none;
         }
         
-        .file-info {
+        .service-file-info {
             flex: 1;
         }
         
@@ -191,12 +451,6 @@
         
         .file-details {
             font-size: 0.8em;
-            color: #718096;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 20px;
             color: #718096;
         }
         
@@ -223,13 +477,57 @@
             color: #2c5282;
             border: 1px solid #90cdf4;
         }
+        
+        .section-divider {
+            text-align: center;
+            margin: 50px 0 30px 0;
+            position: relative;
+        }
+        
+        .section-divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+        }
+        
+        .section-divider span {
+            background: #f7fafc;
+            padding: 0 30px;
+            color: #718096;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        @media (max-width: 768px) {
+            .file-item, .service-file-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .file-actions {
+                margin-top: 15px;
+                width: 100%;
+            }
+            
+            .fragmentation-title {
+                font-size: 2em;
+            }
+            
+            .provider-status {
+                justify-content: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
         <div class="welcome-card">
             <h1>Cloud Storage Dashboard</h1>
-            <p>Modular File Management System</p>
+            <p>Advanced Modular File Management System</p>
             <div class="user-info">
                 <p>Logged in as: <span id="userName"></span></p>
                 <p>Email: <span id="userEmail"></span></p>
@@ -238,6 +536,63 @@
         </div>
         
         <div id="alerts"></div>
+        
+        <!-- Fragmentation System Section -->
+        <div class="fragmentation-section">
+            <div class="fragmentation-header">
+                <div class="fragmentation-title">
+                    🗂️ File Fragmentation System
+                </div>
+                <div class="fragmentation-subtitle">
+                    Securely store large files across multiple cloud services with redundancy
+                </div>
+            </div>
+            
+            <div id="fragmentationStatusCard" class="status-card">
+                <div class="loading">Checking authentication status...</div>
+            </div>
+            
+            <div id="fragmentationUploadSection" class="upload-section" style="display: none;">
+                <h3>Upload File for Fragmentation</h3>
+                <p>Drop a file here or click to select</p>
+                <input type="file" id="fragmentationFileInput" style="display: none;">
+                <button class="btn" onclick="document.getElementById('fragmentationFileInput').click()">Select File</button>
+                
+                <div style="display: flex; gap: 20px; margin-top: 20px; justify-content: center;">
+                    <div class="form-group" style="max-width: 200px;">
+                        <label for="chunkSize">Chunk Size:</label>
+                        <select id="chunkSize" class="form-control">
+                            <option value="524288">512 KB</option>
+                            <option value="1048576" selected>1 MB</option>
+                            <option value="2097152">2 MB</option>
+                            <option value="5242880">5 MB</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" style="max-width: 200px;">
+                        <label for="redundancyLevel">Redundancy Level:</label>
+                        <select id="redundancyLevel" class="form-control">
+                            <option value="1">1 (Single copy)</option>
+                            <option value="2" selected>2 (Double redundancy)</option>
+                            <option value="3">3 (Triple redundancy)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button id="fragmentationUploadBtn" class="btn" onclick="uploadFragmentedFile()" disabled>Upload & Fragment</button>
+            </div>
+            
+            <div class="files-list">
+                <h3>Fragmented Files</h3>
+                <div id="fragmentationFilesList">
+                    <div class="loading">Loading files...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider">
+            <span>Individual Cloud Service Management</span>
+        </div>
         
         <div class="cloud-services">
             <div class="service-card">
@@ -335,5 +690,389 @@
     </div>
     
     <script src="js/dashboard.js"></script>
+    <script>
+        // Fragmentation System JavaScript
+        let fragmentationAuthStatus = null;
+        let selectedFragmentationFile = null;
+        
+        // Check fragmentation authentication status on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add a small delay to ensure the main dashboard loads first
+            setTimeout(() => {
+                checkFragmentationAuthStatus();
+                setupFragmentationFileUpload();
+            }, 1000);
+        });
+        
+        function checkFragmentationAuthStatus() {
+            fetch('../api/fragmentation.php?action=status')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    fragmentationAuthStatus = data;
+                    updateFragmentationStatusCard();
+                    if (data.fragmentation_available) {
+                        loadFragmentedFiles();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking fragmentation auth status:', error);
+                    document.getElementById('fragmentationStatusCard').innerHTML = 
+                        `<div class="error">Error checking authentication status: ${error.message}</div>`;
+                });
+        }
+        
+        function updateFragmentationStatusCard() {
+            const statusCard = document.getElementById('fragmentationStatusCard');
+            const uploadSection = document.getElementById('fragmentationUploadSection');
+            
+            if (fragmentationAuthStatus && fragmentationAuthStatus.fragmentation_available) {
+                statusCard.className = 'status-card status-ok';
+                statusCard.innerHTML = `
+                    <h4>✅ Fragmentation Available</h4>
+                    <p>All required cloud services are connected.</p>
+                    <div class="provider-status">
+                        ${fragmentationAuthStatus.authenticated_providers.map(provider => 
+                            `<span class="provider connected">${provider.toUpperCase()}</span>`
+                        ).join('')}
+                    </div>
+                `;
+                uploadSection.style.display = 'block';
+            } else if (fragmentationAuthStatus) {
+                statusCard.className = 'status-card status-warning';
+                statusCard.innerHTML = `
+                    <h4>⚠️ Authentication Required</h4>
+                    <p>Fragmentation requires authentication with all cloud services.</p>
+                    <div class="provider-status">
+                        ${fragmentationAuthStatus.authenticated_providers ? fragmentationAuthStatus.authenticated_providers.map(provider => 
+                            `<span class="provider connected">${provider.toUpperCase()}</span>`
+                        ).join('') : ''}
+                        ${fragmentationAuthStatus.missing_providers ? fragmentationAuthStatus.missing_providers.map(provider => 
+                            `<span class="provider disconnected">${provider.toUpperCase()}</span>`
+                        ).join('') : ''}
+                    </div>
+                    <p style="margin-top: 15px;">
+                        Please authenticate with: <strong>${fragmentationAuthStatus.missing_providers ? fragmentationAuthStatus.missing_providers.join(', ') : 'all providers'}</strong>
+                    </p>
+                `;
+                uploadSection.style.display = 'none';
+            } else {
+                statusCard.className = 'status-card status-error';
+                statusCard.innerHTML = `
+                    <h4>❌ Service Unavailable</h4>
+                    <p>Unable to check fragmentation service status. Please ensure all services are running.</p>
+                `;
+                uploadSection.style.display = 'none';
+            }
+        }
+        
+        function setupFragmentationFileUpload() {
+            const fileInput = document.getElementById('fragmentationFileInput');
+            const uploadSection = document.getElementById('fragmentationUploadSection');
+            const uploadBtn = document.getElementById('fragmentationUploadBtn');
+            
+            if (!fileInput || !uploadSection || !uploadBtn) {
+                console.error('Fragmentation UI elements not found');
+                return;
+            }
+            
+            fileInput.addEventListener('change', function() {
+                selectedFragmentationFile = this.files[0];
+                if (selectedFragmentationFile) {
+                    uploadSection.querySelector('p').textContent = `Selected: ${selectedFragmentationFile.name} (${formatFileSize(selectedFragmentationFile.size)})`;
+                    uploadBtn.disabled = false;
+                }
+            });
+            
+            // Drag and drop functionality
+            uploadSection.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+            
+            uploadSection.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+            
+            uploadSection.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    selectedFragmentationFile = files[0];
+                    fileInput.files = files;
+                    this.querySelector('p').textContent = `Selected: ${selectedFragmentationFile.name} (${formatFileSize(selectedFragmentationFile.size)})`;
+                    uploadBtn.disabled = false;
+                }
+            });
+        }
+        
+        function uploadFragmentedFile() {
+            if (!selectedFragmentationFile || !fragmentationAuthStatus || !fragmentationAuthStatus.fragmentation_available) {
+                showFragmentationMessage('Please select a file and ensure all cloud services are authenticated', 'error');
+                return;
+            }
+            
+            const uploadBtn = document.getElementById('fragmentationUploadBtn');
+            const formData = new FormData();
+            
+            formData.append('file', selectedFragmentationFile);
+            formData.append('chunk_size', document.getElementById('chunkSize').value);
+            formData.append('redundancy_level', document.getElementById('redundancyLevel').value);
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            
+            fetch('../api/fragmentation.php?action=upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showFragmentationMessage('File uploaded and fragmented successfully!', 'success');
+                    selectedFragmentationFile = null;
+                    document.getElementById('fragmentationFileInput').value = '';
+                    document.getElementById('fragmentationUploadSection').querySelector('p').textContent = 'Drop a file here or click to select';
+                    loadFragmentedFiles();
+                } else {
+                    showFragmentationMessage('Upload failed: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Upload error:', error);
+                showFragmentationMessage('Upload failed: ' + error.message, 'error');
+            })
+            .finally(() => {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload & Fragment';
+            });
+        }
+        
+        function loadFragmentedFiles() {
+            fetch('../api/fragmentation.php?action=list')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        displayFragmentedFiles(data.files);
+                    } else {
+                        document.getElementById('fragmentationFilesList').innerHTML = 
+                            '<div class="error">Failed to load files: ' + data.message + '</div>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading files:', error);
+                    document.getElementById('fragmentationFilesList').innerHTML = 
+                        '<div class="error">Error loading files: ' + error.message + '</div>';
+                });
+        }
+        
+        function displayFragmentedFiles(files) {
+            const filesList = document.getElementById('fragmentationFilesList');
+            
+            if (!files || files.length === 0) {
+                filesList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.8);">No fragmented files found.</p>';
+                return;
+            }
+            
+            filesList.innerHTML = files.map(file => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <h4>${escapeHtml(file.original_filename)}</h4>
+                        <div class="file-meta">
+                            Size: ${formatFileSize(file.original_size)} | 
+                            Status: ${escapeHtml(file.status)} | 
+                            Chunks: ${file.uploaded_chunks}/${file.total_chunks} |
+                            Created: ${new Date(file.created_at).toLocaleDateString()}
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${(file.uploaded_chunks / file.total_chunks) * 100}%"></div>
+                        </div>
+                    </div>
+                    <div class="file-actions">
+                        <button class="btn btn-success" onclick="downloadFragmentedFile(${file.id})" 
+                                ${file.status !== 'complete' ? 'disabled' : ''}>
+                            Download
+                        </button>
+                        <button class="btn" onclick="viewFragmentedFileInfo(${file.id})">Info</button>
+                        <button class="btn btn-danger" onclick="deleteFragmentedFile(${file.id})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function downloadFragmentedFile(fileId) {
+            const link = document.createElement('a');
+            link.href = `../api/fragmentation.php?action=download&id=${fileId}`;
+            link.download = ''; // This will use the filename from the server
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function viewFragmentedFileInfo(fileId) {
+            fetch(`../api/fragmentation.php?action=info&id=${fileId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const info = data.file_info;
+                        const stats = data.storage_statistics;
+                        const integrity = data.integrity;
+                        
+                        alert(`File Information:
+Name: ${info.original_filename}
+Size: ${formatFileSize(info.original_size)}
+MIME Type: ${info.mime_type}
+Chunks: ${info.total_chunks}
+Chunk Size: ${formatFileSize(info.chunk_size)}
+Redundancy Level: ${info.redundancy_level}
+Status: ${info.status}
+
+Storage Distribution:
+Dropbox: ${stats.dropbox} chunks
+Google Drive: ${stats.google} chunks
+OneDrive: ${stats.onedrive} chunks
+
+Integrity Check:
+Complete: ${integrity.is_complete ? 'Yes' : 'No'}
+Progress: ${integrity.completion_percentage}%`);
+                    } else {
+                        showFragmentationMessage('Failed to get file info: ' + data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error getting file info:', error);
+                    showFragmentationMessage('Error getting file info: ' + error.message, 'error');
+                });
+        }
+        
+        function deleteFragmentedFile(fileId) {
+            if (!confirm('Are you sure you want to delete this fragmented file? This action cannot be undone.')) {
+                return;
+            }
+            
+            fetch(`../api/fragmentation.php?action=delete&id=${fileId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    showFragmentationMessage('File deleted successfully!', 'success');
+                    loadFragmentedFiles();
+                } else {
+                    showFragmentationMessage('Delete failed: ' + data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Delete error:', error);
+                showFragmentationMessage('Delete failed: ' + error.message, 'error');
+            });
+        }
+        
+        // Use the formatFileSize function from dashboard.js if available, otherwise define our own
+        if (typeof formatFileSize === 'undefined') {
+            function formatFileSize(bytes) {
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                if (bytes === 0) return '0 Bytes';
+                const i = Math.floor(Math.log(bytes) / Math.log(1024));
+                return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+            }
+        }
+        
+        // Use the escapeHtml function from dashboard.js if available, otherwise define our own
+        if (typeof escapeHtml === 'undefined') {
+            function escapeHtml(text) {
+                const map = {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                };
+                return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+            }
+        }
+        
+        function showFragmentationMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            const fragmentationSection = document.querySelector('.fragmentation-section');
+            if (fragmentationSection) {
+                fragmentationSection.insertBefore(messageDiv, fragmentationSection.firstChild);
+                
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.remove();
+                    }
+                }, 5000);
+            } else {
+                // Fallback to regular alert system
+                if (typeof showAlert === 'function') {
+                    showAlert(message, type);
+                } else {
+                    alert(message);
+                }
+            }
+        }
+        
+        // Function to refresh fragmentation status when cloud services connect/disconnect
+        function refreshFragmentationStatus() {
+            if (fragmentationAuthStatus !== null) {
+                checkFragmentationAuthStatus();
+            }
+        }
+        
+        // Override the existing cloud service status update functions to refresh fragmentation status
+        const originalUpdateGoogleUI = window.updateGoogleUI;
+        if (typeof originalUpdateGoogleUI === 'function') {
+            window.updateGoogleUI = function(connected) {
+                originalUpdateGoogleUI(connected);
+                setTimeout(refreshFragmentationStatus, 500);
+            };
+        }
+        
+        // Add refresh button for troubleshooting
+        function addFragmentationRefreshButton() {
+            const statusCard = document.getElementById('fragmentationStatusCard');
+            if (statusCard && !statusCard.querySelector('.refresh-btn')) {
+                const refreshBtn = document.createElement('button');
+                refreshBtn.className = 'btn refresh-btn';
+                refreshBtn.textContent = '🔄 Refresh Status';
+                refreshBtn.style.marginTop = '10px';
+                refreshBtn.onclick = checkFragmentationAuthStatus;
+                statusCard.appendChild(refreshBtn);
+            }
+        }
+        
+        // Add refresh button after initial load
+        setTimeout(addFragmentationRefreshButton, 2000);
+    </script>
 </body>
 </html> 
