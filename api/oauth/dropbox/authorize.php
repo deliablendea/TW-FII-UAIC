@@ -3,7 +3,8 @@ require_once __DIR__ . '/../../../config/Database.php';
 require_once __DIR__ . '/../../../controllers/DropboxOAuthController.php';
 
 try {
-    $controller = new DropboxOAuthController($pdo);
+    $db = Database::getInstance();
+    $controller = new DropboxOAuthController($db->getConnection());
     $controller->authorize();
 } catch (Exception $e) {
     error_log("Dropbox OAuth authorize error: " . $e->getMessage());
