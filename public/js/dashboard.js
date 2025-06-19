@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     checkUserSession();
     checkGoogleDriveStatus();
     checkDropboxStatus();
+    checkOneDriveStatus();
     handleOAuthCallback();
 });
 
@@ -24,7 +25,7 @@ function checkUserSession() {
                 console.log('Session invalid, redirecting to login...');
                 // Add a small delay to prevent infinite redirects
                 setTimeout(() => {
-                    window.location.href = 'login.html';
+                window.location.href = 'login.html';
                 }, 100);
             }
         })
@@ -378,6 +379,170 @@ function displayDropboxFiles(files) {
     fileList.innerHTML = html;
 }
 
+// OneDrive Functions
+function checkOneDriveStatus() {
+    console.log('Checking OneDrive status...');
+    fetch('../api/oauth/onedrive/status.php')
+        .then(response => {
+            console.log('OneDrive status response:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('OneDrive status data:', data);
+            if (data.success && data.connected) {
+                updateOneDriveUI(true);
+            } else {
+                updateOneDriveUI(false);
+            }
+        })
+        .catch(error => {
+            console.error('OneDrive status check error:', error);
+            updateOneDriveUI(false);
+        });
+}
+
+function updateOneDriveUI(connected) {
+    const statusBadge = document.getElementById('onedriveStatus');
+    const connectBtn = document.getElementById('onedriveConnectBtn');
+    const disconnectBtn = document.getElementById('onedriveDisconnectBtn');
+    const fileOps = document.getElementById('onedriveFileOps');
+    
+    if (connected) {
+        statusBadge.textContent = 'Connected';
+        statusBadge.className = 'status-badge status-connected';
+        connectBtn.style.display = 'none';
+        disconnectBtn.style.display = 'inline-block';
+        fileOps.style.display = 'block';
+    } else {
+        statusBadge.textContent = 'Disconnected';
+        statusBadge.className = 'status-badge status-disconnected';
+        connectBtn.style.display = 'inline-block';
+        disconnectBtn.style.display = 'none';
+        fileOps.style.display = 'none';
+    }
+}
+
+function connectOneDrive() {
+    console.log('Connecting to OneDrive...');
+    window.location.href = '../api/oauth/onedrive/authorize.php';
+}
+
+function disconnectOneDrive() {
+    if (confirm('Are you sure you want to disconnect OneDrive?')) {
+        fetch('../api/oauth/onedrive/disconnect.php', {
+            method: 'POST'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showAlert('OneDrive disconnected successfully', 'success');
+                updateOneDriveUI(false);
+                document.getElementById('onedriveFileList').style.display = 'none';
+            } else {
+                showAlert('Failed to disconnect OneDrive: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('OneDrive disconnect error:', error);
+            showAlert('Error disconnecting OneDrive', 'error');
+        });
+    }
+}
+
+function uploadToOneDrive() {
+    const fileInput = document.getElementById('onedriveFileInput');
+    const file = fileInput.files[0];
+    
+    if (!file) {
+        showAlert('Please select a file to upload', 'error');
+        return;
+    }
+    
+    if (file.size > 4 * 1024 * 1024) { // 4MB limit for OneDrive simple upload
+        showAlert('File is too large (max 4MB)', 'error');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    showAlert('Uploading file to OneDrive...', 'info');
+    
+    fetch('../api/onedrive/upload.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${data.file.name}" uploaded successfully to OneDrive`, 'success');
+            fileInput.value = ''; // Clear the input
+            // Refresh file list if it's currently displayed
+            const fileList = document.getElementById('onedriveFileList');
+            if (fileList.style.display !== 'none') {
+                listOneDriveFiles();
+            }
+        } else {
+            showAlert('Upload failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showAlert('Upload failed: Network error', 'error');
+    });
+}
+
+function listOneDriveFiles() {
+    const fileList = document.getElementById('onedriveFileList');
+    fileList.innerHTML = '<div class="loading">Loading files...</div>';
+    fileList.style.display = 'block';
+    
+    fetch('../api/onedrive/list.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayOneDriveFiles(data.files);
+            } else {
+                fileList.innerHTML = `<div class="loading">Error: ${data.message}</div>`;
+            }
+        })
+        .catch(error => {
+            console.error('List files error:', error);
+            fileList.innerHTML = '<div class="loading">Error loading files</div>';
+        });
+}
+
+function displayOneDriveFiles(files) {
+    const fileList = document.getElementById('onedriveFileList');
+    
+    if (!files || files.length === 0) {
+        fileList.innerHTML = '<div class="loading">No files found</div>';
+        return;
+    }
+    
+    let html = '';
+    files.forEach(file => {
+        const size = file.size ? formatFileSize(parseInt(file.size)) : 'Unknown size';
+        const modifiedDate = file.modified ? new Date(file.modified).toLocaleDateString() : 'Unknown date';
+        const fileTypeIcon = file.type === 'folder' ? '📁' : '📄';
+        
+        html += `
+            <div class="file-item">
+                <div class="file-info">
+                    <div class="file-name">${fileTypeIcon} ${escapeHtml(file.name)}</div>
+                    <div class="file-details">
+                        Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
+                        <br>Path: ${escapeHtml(file.path)}
+                        ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    
+    fileList.innerHTML = html;
+}
+
 function handleOAuthCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const oauthStatus = urlParams.get('oauth');
@@ -393,11 +558,14 @@ function handleOAuthCallback() {
         } else if (provider === 'dropbox') {
             showAlert('Dropbox connected successfully!', 'success');
             checkDropboxStatus();
+        } else if (provider === 'onedrive') {
+            showAlert('OneDrive connected successfully!', 'success');
+            checkOneDriveStatus();
         }
         // Remove the query parameter from URL
         window.history.replaceState({}, document.title, window.location.pathname);
     } else if (oauthStatus === 'error') {
-        let providerName = provider === 'dropbox' ? 'Dropbox' : 'Google Drive';
+        let providerName = provider === 'dropbox' ? 'Dropbox' : provider === 'onedrive' ? 'OneDrive' : 'Google Drive';
         let errorMessage = `Failed to connect to ${providerName}`;
         if (reason) {
             switch(reason) {
