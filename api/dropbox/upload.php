@@ -23,7 +23,8 @@ if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
 }
 
 try {
-    $dropboxService = new DropboxService($pdo);
+    $db = Database::getInstance();
+    $dropboxService = new DropboxService($db->getConnection());
     $userId = $_SESSION['user_id'];
     
     $file = $_FILES['file'];
@@ -31,7 +32,7 @@ try {
     $filePath = $file['tmp_name'];
     $targetPath = $_POST['path'] ?? '/';
     
-    // Validate file size (50MB limit)
+    // Validate file size (50MB limit for Dropbox)
     $maxSize = 50 * 1024 * 1024; // 50MB
     if ($file['size'] > $maxSize) {
         echo json_encode(['success' => false, 'message' => 'File too large. Maximum size is 50MB']);

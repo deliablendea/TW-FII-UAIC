@@ -18,7 +18,8 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    $dropboxService = new DropboxService($pdo);
+    $db = Database::getInstance();
+    $dropboxService = new DropboxService($db->getConnection());
     $userId = $_SESSION['user_id'];
     $path = $_GET['path'] ?? '';
     

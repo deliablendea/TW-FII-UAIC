@@ -20,7 +20,8 @@ try {
     require_once __DIR__ . '/../../../models/OAuthToken.php';
     
     // Create OAuth model
-    $oauthTokenModel = new OAuthToken($pdo);
+    $db = Database::getInstance();
+    $oauthTokenModel = new OAuthToken($db->getConnection());
     
     // Check if connected
     $userId = $_SESSION['user_id'];

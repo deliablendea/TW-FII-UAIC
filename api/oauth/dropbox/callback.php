@@ -10,7 +10,8 @@ try {
     require_once __DIR__ . '/../../../config/Database.php';
     require_once __DIR__ . '/../../../controllers/DropboxOAuthController.php';
     
-    $controller = new DropboxOAuthController($pdo);
+    $db = Database::getInstance();
+    $controller = new DropboxOAuthController($db->getConnection());
     $controller->callback();
     
 } catch (Exception $e) {
