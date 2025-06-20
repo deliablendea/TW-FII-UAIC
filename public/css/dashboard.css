@@ -1,0 +1,515 @@
+.dashboard-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.welcome-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.user-info {
+    margin: 20px 0;
+    color: #718096;
+}
+
+.logout-btn {
+    background: #e53e3e;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+.logout-btn:hover {
+    background: #c53030;
+}
+
+/* Fragmentation System Styles */
+.fragmentation-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    margin-bottom: 40px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+}
+
+.fragmentation-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.fragmentation-title {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+
+.fragmentation-subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.status-card {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+}
+
+.status-ok { 
+    border-color: #48bb78; 
+    background: rgba(72, 187, 120, 0.2);
+}
+
+.status-warning { 
+    border-color: #ed8936; 
+    background: rgba(237, 137, 54, 0.2);
+}
+
+.status-error { 
+    border-color: #f56565; 
+    background: rgba(245, 101, 101, 0.2);
+}
+
+.upload-section {
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    margin-bottom: 30px;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.upload-section:hover { 
+    border-color: rgba(255, 255, 255, 0.6); 
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.upload-section.dragover { 
+    border-color: #48bb78; 
+    background: rgba(72, 187, 120, 0.2);
+    transform: scale(1.02);
+}
+
+.btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 24px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn:hover { 
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn:disabled { 
+    background: rgba(255, 255, 255, 0.1); 
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-danger { 
+    background: rgba(245, 101, 101, 0.8);
+    border-color: #f56565;
+}
+
+.btn-danger:hover { 
+    background: rgba(229, 62, 62, 0.9);
+}
+
+.btn-success { 
+    background: rgba(72, 187, 120, 0.8);
+    border-color: #48bb78;
+}
+
+.btn-success:hover { 
+    background: rgba(56, 161, 105, 0.9);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    font-size: 14px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.form-control option {
+    background: #4a5568;
+    color: white;
+}
+
+.files-list {
+    margin-top: 30px;
+}
+
+.file-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.file-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.file-info h4 {
+    margin: 0 0 10px 0;
+    color: white;
+    font-weight: 600;
+}
+
+.file-meta {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #48bb78, #38a169);
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+.provider-status {
+    display: flex;
+    gap: 15px;
+    margin: 20px 0;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.provider {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.provider.connected { 
+    background: rgba(72, 187, 120, 0.8); 
+    color: white;
+    box-shadow: 0 3px 10px rgba(72, 187, 120, 0.3);
+}
+
+.provider.disconnected { 
+    background: rgba(245, 101, 101, 0.8); 
+    color: white;
+    box-shadow: 0 3px 10px rgba(245, 101, 101, 0.3);
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.error {
+    color: #fed7d7;
+    background: rgba(245, 101, 101, 0.2);
+    border: 1px solid rgba(245, 101, 101, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.success {
+    color: #c6f6d5;
+    background: rgba(72, 187, 120, 0.2);
+    border: 1px solid rgba(72, 187, 120, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+/* Cloud Services Grid */
+.cloud-services {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.service-card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+}
+
+.service-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.service-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.5em;
+    font-weight: 600;
+}
+
+.service-icon {
+    width: 32px;
+    height: 32px;
+}
+
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8em;
+    font-weight: 600;
+}
+
+.status-connected {
+    background: #c6f6d5;
+    color: #22543d;
+}
+
+.status-disconnected {
+    background: #fed7d7;
+    color: #742a2a;
+}
+
+.connect-btn, .upload-btn, .list-btn {
+    background: #4285f4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.connect-btn:hover, .upload-btn:hover, .list-btn:hover {
+    background: #3367d6;
+}
+
+.dropbox-connect-btn, .dropbox-upload-btn, .dropbox-list-btn {
+    background: #0061ff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.dropbox-connect-btn:hover, .dropbox-upload-btn:hover, .dropbox-list-btn:hover {
+    background: #0051d4;
+}
+
+.onedrive-connect-btn, .onedrive-upload-btn, .onedrive-list-btn {
+    background: #0078d4;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.onedrive-connect-btn:hover, .onedrive-upload-btn:hover, .onedrive-list-btn:hover {
+    background: #106ebe;
+}
+
+.disconnect-btn {
+    background: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.disconnect-btn:hover {
+    background: #c82333;
+}
+
+.file-upload {
+    margin: 20px 0;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.service-file-item {
+    padding: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.service-file-item:last-child {
+    border-bottom: none;
+}
+
+.service-file-info {
+    flex: 1;
+}
+
+.file-name {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.file-details {
+    font-size: 0.8em;
+    color: #718096;
+}
+
+.alert {
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.alert-success {
+    background: #c6f6d5;
+    color: #22543d;
+    border: 1px solid #9ae6b4;
+}
+
+.alert-error {
+    background: #fed7d7;
+    color: #742a2a;
+    border: 1px solid #fc8181;
+}
+
+.alert-info {
+    background: #bee3f8;
+    color: #2c5282;
+    border: 1px solid #90cdf4;
+}
+
+.section-divider {
+    text-align: center;
+    margin: 50px 0 30px 0;
+    position: relative;
+}
+
+.section-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+}
+
+.section-divider span {
+    background: #f7fafc;
+    padding: 0 30px;
+    color: #718096;
+    font-weight: 600;
+    font-size: 1.1em;
+}
+
+@media (max-width: 768px) {
+    .file-item, .service-file-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .file-actions {
+        margin-top: 15px;
+        width: 100%;
+    }
+    
+    .fragmentation-title {
+        font-size: 2em;
+    }
+    
+    .provider-status {
+        justify-content: flex-start;
+    }
+} 

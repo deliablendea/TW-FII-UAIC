@@ -1,4 +1,6 @@
-// Dashboard JavaScript for Cloud Storage Management
+
+let fragmentationAuthStatus = null;
+let selectedFragmentationFile = null;
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard loading...');
@@ -7,6 +9,13 @@ document.addEventListener('DOMContentLoaded', function() {
     checkDropboxStatus();
     checkOneDriveStatus();
     handleOAuthCallback();
+    
+  
+    setTimeout(() => {
+        checkFragmentationAuthStatus();
+        setupFragmentationFileUpload();
+        setupFragmentationStatusRefresh();
+    }, 1000);
 });
 
 function checkUserSession() {
@@ -543,6 +552,428 @@ function displayOneDriveFiles(files) {
     fileList.innerHTML = html;
 }
 
+// Fragmentation System Functions
+function checkFragmentationAuthStatus() {
+    fetch('../api/fragmentation.php?action=status')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('🔍 Fragmentation status response:', data);
+            console.log('🔍 authenticated_providers type:', typeof data.authenticated_providers);
+            console.log('🔍 authenticated_providers value:', data.authenticated_providers);
+            console.log('🔍 is array?', Array.isArray(data.authenticated_providers));
+            
+            if (data.success === false && data.message === 'Not authenticated') {
+                // User is not logged in, show appropriate message
+                document.getElementById('fragmentationStatusCard').innerHTML = `
+                    <div class="error">
+                        <h4>❌ Authentication Required</h4>
+                        <p>You need to be logged in to use the fragmentation system.</p>
+                        <p><a href="login.html">Please log in here</a></p>
+                    </div>
+                `;
+                document.getElementById('fragmentationUploadSection').style.display = 'none';
+                return;
+            }
+            
+            fragmentationAuthStatus = data;
+            updateFragmentationStatusCard();
+            if (data.fragmentation_available) {
+                loadFragmentedFiles();
+            }
+        })
+        .catch(error => {
+            console.error('Error checking fragmentation auth status:', error);
+            document.getElementById('fragmentationStatusCard').innerHTML = 
+                `<div class="error">Error checking authentication status: ${error.message}</div>`;
+        });
+}
+
+function updateFragmentationStatusCard() {
+    const statusCard = document.getElementById('fragmentationStatusCard');
+    const uploadSection = document.getElementById('fragmentationUploadSection');
+    
+    if (fragmentationAuthStatus && fragmentationAuthStatus.fragmentation_available) {
+        statusCard.className = 'status-card status-ok';
+        statusCard.innerHTML = `
+            <h4>✅ Fragmentation Available</h4>
+            <p>All required cloud services are connected.</p>
+            <div class="provider-status">
+                ${fragmentationAuthStatus.authenticated_providers && Array.isArray(fragmentationAuthStatus.authenticated_providers) ? fragmentationAuthStatus.authenticated_providers.map(provider => 
+                    `<span class="provider connected">${provider.toUpperCase()}</span>`
+                ).join('') : ''}
+            </div>
+        `;
+        uploadSection.style.display = 'block';
+    } else if (fragmentationAuthStatus) {
+        statusCard.className = 'status-card status-warning';
+        statusCard.innerHTML = `
+            <h4>⚠️ Authentication Required</h4>
+            <p>Fragmentation requires authentication with all cloud services.</p>
+            <div class="provider-status">
+                ${fragmentationAuthStatus.authenticated_providers && Array.isArray(fragmentationAuthStatus.authenticated_providers) ? fragmentationAuthStatus.authenticated_providers.map(provider => 
+                    `<span class="provider connected">${provider.toUpperCase()}</span>`
+                ).join('') : ''}
+                ${fragmentationAuthStatus.missing_providers && Array.isArray(fragmentationAuthStatus.missing_providers) ? fragmentationAuthStatus.missing_providers.map(provider => 
+                    `<span class="provider disconnected">${provider.toUpperCase()}</span>`
+                ).join('') : ''}
+            </div>
+            <p style="margin-top: 15px;">
+                Please authenticate with: <strong>${fragmentationAuthStatus.missing_providers && Array.isArray(fragmentationAuthStatus.missing_providers) ? fragmentationAuthStatus.missing_providers.join(', ') : 'all providers'}</strong>
+            </p>
+        `;
+        uploadSection.style.display = 'none';
+    } else {
+        statusCard.className = 'status-card status-error';
+        statusCard.innerHTML = `
+            <h4>❌ Service Unavailable</h4>
+            <p>Unable to check fragmentation service status. Please ensure all services are running.</p>
+        `;
+        uploadSection.style.display = 'none';
+    }
+}
+
+function setupFragmentationFileUpload() {
+    const fileInput = document.getElementById('fragmentationFileInput');
+    const uploadSection = document.getElementById('fragmentationUploadSection');
+    const uploadBtn = document.getElementById('fragmentationUploadBtn');
+    
+    if (!fileInput || !uploadSection || !uploadBtn) {
+        console.error('Fragmentation UI elements not found');
+        return;
+    }
+    
+    fileInput.addEventListener('change', function() {
+        selectedFragmentationFile = this.files[0];
+        if (selectedFragmentationFile) {
+            uploadSection.querySelector('p').textContent = `Selected: ${selectedFragmentationFile.name} (${formatFileSize(selectedFragmentationFile.size)})`;
+            uploadBtn.disabled = false;
+        }
+    });
+    
+    // Drag and drop functionality
+    uploadSection.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    
+    uploadSection.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+    });
+    
+    uploadSection.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            selectedFragmentationFile = files[0];
+            fileInput.files = files;
+            this.querySelector('p').textContent = `Selected: ${selectedFragmentationFile.name} (${formatFileSize(selectedFragmentationFile.size)})`;
+            uploadBtn.disabled = false;
+        }
+    });
+}
+
+function uploadFragmentedFile() {
+    if (!selectedFragmentationFile || !fragmentationAuthStatus || !fragmentationAuthStatus.fragmentation_available) {
+        showFragmentationMessage('Please select a file and ensure all cloud services are authenticated', 'error');
+        return;
+    }
+    
+    const uploadBtn = document.getElementById('fragmentationUploadBtn');
+    const formData = new FormData();
+    
+    formData.append('file', selectedFragmentationFile);
+    formData.append('chunk_size', document.getElementById('chunkSize').value);
+    formData.append('redundancy_level', document.getElementById('redundancyLevel').value);
+    
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = 'Uploading...';
+    
+    fetch('../api/fragmentation.php?action=upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showFragmentationMessage('File uploaded and fragmented successfully!', 'success');
+            selectedFragmentationFile = null;
+            document.getElementById('fragmentationFileInput').value = '';
+            document.getElementById('fragmentationUploadSection').querySelector('p').textContent = 'Drop a file here or click to select';
+            loadFragmentedFiles();
+        } else {
+            showFragmentationMessage('Upload failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Upload error:', error);
+        showFragmentationMessage('Upload failed: ' + error.message, 'error');
+    })
+    .finally(() => {
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Upload & Fragment';
+    });
+}
+
+function loadFragmentedFiles() {
+    fetch('../api/fragmentation.php?action=list')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                displayFragmentedFiles(data.files);
+            } else {
+                document.getElementById('fragmentationFilesList').innerHTML = 
+                    '<div class="error">Failed to load files: ' + data.message + '</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading files:', error);
+            document.getElementById('fragmentationFilesList').innerHTML = 
+                '<div class="error">Error loading files: ' + error.message + '</div>';
+        });
+}
+
+function displayFragmentedFiles(files) {
+    const filesList = document.getElementById('fragmentationFilesList');
+    
+    if (!files || files.length === 0) {
+        filesList.innerHTML = '<p style="text-align: center; color: rgba(255, 255, 255, 0.8);">No fragmented files found.</p>';
+        return;
+    }
+    
+    filesList.innerHTML = files.map(file => `
+        <div class="file-item">
+            <div class="file-info">
+                <h4>${escapeHtml(file.original_filename)}</h4>
+                <div class="file-meta">
+                    Size: ${formatFileSize(file.original_size)} | 
+                    Status: ${escapeHtml(file.status)} | 
+                    Chunks: ${file.uploaded_chunks}/${file.total_chunks} |
+                    Created: ${new Date(file.created_at).toLocaleDateString()}
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${(file.uploaded_chunks / file.total_chunks) * 100}%"></div>
+                </div>
+            </div>
+            <div class="file-actions">
+                <button class="btn btn-success" onclick="downloadFragmentedFile(${file.id})" 
+                        ${file.status !== 'complete' ? 'disabled' : ''}>
+                    Download
+                </button>
+                <button class="btn" onclick="viewFragmentedFileInfo(${file.id})">Info</button>
+                <button class="btn btn-danger" onclick="deleteFragmentedFile(${file.id})">Delete</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function downloadFragmentedFile(fileId) {
+    const link = document.createElement('a');
+    link.href = `../api/fragmentation.php?action=download&id=${fileId}`;
+    link.download = ''; // This will use the filename from the server
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function viewFragmentedFileInfo(fileId) {
+    fetch(`../api/fragmentation.php?action=info&id=${fileId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const info = data.file_info;
+                const stats = data.storage_statistics;
+                const integrity = data.integrity;
+                
+                alert(`File Information:
+Name: ${info.original_filename}
+Size: ${formatFileSize(info.original_size)}
+MIME Type: ${info.mime_type}
+Chunks: ${info.total_chunks}
+Chunk Size: ${formatFileSize(info.chunk_size)}
+Redundancy Level: ${info.redundancy_level}
+Status: ${info.status}
+
+Storage Distribution:
+Dropbox: ${stats.dropbox} chunks
+Google Drive: ${stats.google} chunks
+OneDrive: ${stats.onedrive} chunks
+
+Integrity Check:
+Complete: ${integrity.is_complete ? 'Yes' : 'No'}
+Progress: ${integrity.completion_percentage}%`);
+            } else {
+                showFragmentationMessage('Failed to get file info: ' + data.message, 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error getting file info:', error);
+            showFragmentationMessage('Error getting file info: ' + error.message, 'error');
+        });
+}
+
+function deleteFragmentedFile(fileId) {
+    if (!confirm('Are you sure you want to delete this fragmented file? This action cannot be undone.')) {
+        return;
+    }
+    
+    fetch(`../api/fragmentation.php?action=delete&id=${fileId}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showFragmentationMessage('File deleted successfully!', 'success');
+            loadFragmentedFiles();
+        } else {
+            showFragmentationMessage('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showFragmentationMessage('Delete failed: ' + error.message, 'error');
+    });
+}
+
+function showFragmentationMessage(message, type) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = type;
+    messageDiv.textContent = message;
+    
+    const fragmentationSection = document.querySelector('.fragmentation-section');
+    if (fragmentationSection) {
+        fragmentationSection.insertBefore(messageDiv, fragmentationSection.firstChild);
+        
+        setTimeout(() => {
+            if (messageDiv.parentNode) {
+                messageDiv.remove();
+            }
+        }, 5000);
+    } else {
+        // Fallback to regular alert system
+        if (typeof showAlert === 'function') {
+            showAlert(message, type);
+        } else {
+            alert(message);
+        }
+    }
+}
+
+// Function to refresh fragmentation status when cloud services connect/disconnect
+function refreshFragmentationStatus() {
+    if (fragmentationAuthStatus !== null) {
+        console.log('Refreshing fragmentation status due to cloud service change...');
+        checkFragmentationAuthStatus();
+    }
+}
+
+// Override the existing cloud service UI update functions to refresh fragmentation status
+function setupFragmentationStatusRefresh() {
+    // Override Google Drive UI update function
+    if (typeof window.updateGoogleUI === 'function') {
+        const originalUpdateGoogleUI = window.updateGoogleUI;
+        window.updateGoogleUI = function(connected) {
+            originalUpdateGoogleUI(connected);
+            console.log('Google Drive status changed to:', connected);
+            setTimeout(refreshFragmentationStatus, 500); // Small delay to ensure backend is updated
+        };
+    }
+    
+    // Override Dropbox UI update function
+    if (typeof window.updateDropboxUI === 'function') {
+        const originalUpdateDropboxUI = window.updateDropboxUI;
+        window.updateDropboxUI = function(connected) {
+            originalUpdateDropboxUI(connected);
+            console.log('Dropbox status changed to:', connected);
+            setTimeout(refreshFragmentationStatus, 500); // Small delay to ensure backend is updated
+        };
+    }
+    
+    // Override OneDrive UI update function
+    if (typeof window.updateOneDriveUI === 'function') {
+        const originalUpdateOneDriveUI = window.updateOneDriveUI;
+        window.updateOneDriveUI = function(connected) {
+            originalUpdateOneDriveUI(connected);
+            console.log('OneDrive status changed to:', connected);
+            setTimeout(refreshFragmentationStatus, 500); // Small delay to ensure backend is updated
+        };
+    }
+    
+    // Add refresh button for manual refresh
+    setTimeout(addFragmentationRefreshButton, 2000);
+    
+    // Also listen for OAuth callback completions by monitoring URL changes
+    let lastUrl = location.href;
+    new MutationObserver(() => {
+        const currentUrl = location.href;
+        if (currentUrl !== lastUrl) {
+            lastUrl = currentUrl;
+            // Check if we're returning from OAuth
+            if (currentUrl.includes('oauth') || currentUrl.includes('code=')) {
+                console.log('OAuth callback detected, refreshing fragmentation status');
+                setTimeout(refreshFragmentationStatus, 1000);
+            }
+        }
+    }).observe(document, { subtree: true, childList: true });
+    
+    // Handle page visibility changes (when user comes back from OAuth)
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            console.log('Page became visible, checking for OAuth completion');
+            setTimeout(refreshFragmentationStatus, 500);
+        }
+    });
+    
+    console.log('Fragmentation status refresh hooks installed');
+}
+
+// Add refresh button for manual refresh
+function addFragmentationRefreshButton() {
+    const statusCard = document.getElementById('fragmentationStatusCard');
+    if (statusCard && !statusCard.querySelector('.refresh-btn')) {
+        const refreshBtn = document.createElement('button');
+        refreshBtn.className = 'btn refresh-btn';
+        refreshBtn.textContent = '🔄 Refresh Status';
+        refreshBtn.style.marginTop = '10px';
+        refreshBtn.onclick = function() {
+            refreshBtn.textContent = '🔄 Refreshing...';
+            refreshBtn.disabled = true;
+            checkFragmentationAuthStatus();
+            setTimeout(() => {
+                refreshBtn.textContent = '🔄 Refresh Status';
+                refreshBtn.disabled = false;
+            }, 2000);
+        };
+        statusCard.appendChild(refreshBtn);
+    }
+}
+
 function handleOAuthCallback() {
     const urlParams = new URLSearchParams(window.location.search);
     const oauthStatus = urlParams.get('oauth');
@@ -629,3 +1060,4 @@ function escapeHtml(text) {
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
+
