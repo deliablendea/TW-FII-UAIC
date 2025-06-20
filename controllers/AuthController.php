@@ -1,13 +1,16 @@
 <?php
 require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../services/EmailService.php';
 require_once __DIR__ . '/../views/JsonView.php';
 
 class AuthController {
     private $userModel;
+    private $emailService;
     private $jsonView;
     
     public function __construct($pdo) {
         $this->userModel = new User($pdo);
+        $this->emailService = new EmailService();
         $this->jsonView = new JsonView();
     }
     
@@ -27,6 +30,17 @@ class AuthController {
         }
         
         $result = $this->userModel->create($name, $email, $password);
+        
+        // Send welcome email if registration was successful
+        if ($result['success']) {
+            try {
+                $this->emailService->sendWelcomeEmail($email, $name);
+            } catch (Exception $e) {
+                // Log error but don't fail registration if email fails
+                error_log("Failed to send welcome email: " . $e->getMessage());
+            }
+        }
+        
         return $this->jsonView->render($result);
     }
     

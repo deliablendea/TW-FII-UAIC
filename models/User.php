@@ -60,7 +60,7 @@ class User {
             $values = [];
             
             foreach ($data as $key => $value) {
-                if (in_array($key, ['name', 'email'])) {
+                if (in_array($key, ['name', 'email', 'password_hash'])) {
                     $fields[] = "$key = ?";
                     $values[] = $value;
                 }
