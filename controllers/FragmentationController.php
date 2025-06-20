@@ -279,8 +279,8 @@ class FragmentationController {
         echo json_encode([
             'success' => true,
             'fragmentation_available' => $allAuthenticated,
-            'authenticated_providers' => array_diff(['dropbox', 'google', 'onedrive'], $missingProviders),
-            'missing_providers' => $missingProviders,
+            'authenticated_providers' => array_values(array_diff(['dropbox', 'google', 'onedrive'], $missingProviders)),
+            'missing_providers' => array_values($missingProviders),
             'required_providers' => ['dropbox', 'google', 'onedrive']
         ]);
     }
