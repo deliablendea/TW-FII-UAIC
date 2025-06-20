@@ -171,6 +171,46 @@ class GoogleDriveService {
         }
     }
     
+    public function renameFile($fileId, $newName) {
+        $token = $this->getValidToken();
+        if (!$token) {
+            return ['success' => false, 'message' => 'No valid Google Drive token'];
+        }
+        
+        $metadata = [
+            'name' => $newName
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, self::DRIVE_API_URL . '/files/' . $fileId);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($metadata));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json'
+        ]);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode === 200) {
+            $data = json_decode($response, true);
+            return [
+                'success' => true, 
+                'message' => 'File renamed successfully',
+                'file' => [
+                    'id' => $data['id'],
+                    'name' => $data['name']
+                ]
+            ];
+        } else {
+            error_log("Google Drive rename failed: HTTP $httpCode - $response");
+            return ['success' => false, 'message' => 'Failed to rename file in Google Drive'];
+        }
+    }
+    
     private function getValidToken() {
         $token = $this->oauthTokenModel->getToken($this->userId, 'google');
         if (!$token) {

@@ -216,6 +216,11 @@ function displayGoogleFiles(files) {
                     <div class="file-details">
                         Size: ${size} | Modified: ${modifiedDate}
                         ${file.webViewLink ? ` | <a href="${file.webViewLink}" target="_blank">View in Drive</a>` : ''}
+<<<<<<< Updated upstream
+=======
+                        | <button class="rename-btn" onclick="renameGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>
+                        | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -225,6 +230,68 @@ function displayGoogleFiles(files) {
     fileList.innerHTML = html;
 }
 
+<<<<<<< Updated upstream
+=======
+// Rename Google Drive file function
+function renameGoogleFile(fileId, currentName) {
+    const newName = prompt(`Rename file:`, currentName);
+    if (!newName || newName.trim() === '' || newName.trim() === currentName) {
+        return;
+    }
+    
+    fetch('../api/drive/rename.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId, newName: newName.trim() })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File renamed from "${currentName}" to "${newName.trim()}" successfully in Google Drive`, 'success');
+            // Refresh file list
+            listGoogleFiles();
+        } else {
+            showAlert('Rename failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Rename error:', error);
+        showAlert('Rename failed: Network error', 'error');
+    });
+}
+
+// Delete Google Drive file function
+function deleteGoogleFile(fileId, fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}" from Google Drive? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch('../api/drive/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${fileName}" deleted successfully from Google Drive`, 'success');
+            // Refresh file list
+            listGoogleFiles();
+        } else {
+            showAlert('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showAlert('Delete failed: Network error', 'error');
+    });
+}
+
+>>>>>>> Stashed changes
 // Dropbox Functions
 function checkDropboxStatus() {
     console.log('Checking Dropbox status...');
@@ -379,6 +446,12 @@ function displayDropboxFiles(files) {
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
+<<<<<<< Updated upstream
+=======
+                        ${file.type !== 'folder' ? ` | <a href="https://www.dropbox.com/home${file.path}" target="_blank">View in Dropbox</a>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="renameDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -388,6 +461,68 @@ function displayDropboxFiles(files) {
     fileList.innerHTML = html;
 }
 
+<<<<<<< Updated upstream
+=======
+// Rename Dropbox file function
+function renameDropboxFile(filePath, currentName) {
+    const newName = prompt(`Rename file:`, currentName);
+    if (!newName || newName.trim() === '' || newName.trim() === currentName) {
+        return;
+    }
+    
+    fetch('../api/dropbox/rename.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: filePath, newName: newName.trim() })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File renamed from "${currentName}" to "${newName.trim()}" successfully in Dropbox`, 'success');
+            // Refresh file list
+            listDropboxFiles();
+        } else {
+            showAlert('Rename failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Rename error:', error);
+        showAlert('Rename failed: Network error', 'error');
+    });
+}
+
+// Delete Dropbox file function
+function deleteDropboxFile(filePath, fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}" from Dropbox? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch('../api/dropbox/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: filePath })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${fileName}" deleted successfully from Dropbox`, 'success');
+            // Refresh file list
+            listDropboxFiles();
+        } else {
+            showAlert('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showAlert('Delete failed: Network error', 'error');
+    });
+}
+
+>>>>>>> Stashed changes
 // OneDrive Functions
 function checkOneDriveStatus() {
     console.log('Checking OneDrive status...');
@@ -543,6 +678,11 @@ function displayOneDriveFiles(files) {
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
+<<<<<<< Updated upstream
+=======
+                        ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="renameOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
+>>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -552,6 +692,68 @@ function displayOneDriveFiles(files) {
     fileList.innerHTML = html;
 }
 
+<<<<<<< Updated upstream
+=======
+// Rename OneDrive file function
+function renameOneDriveFile(fileId, currentName) {
+    const newName = prompt(`Rename file:`, currentName);
+    if (!newName || newName.trim() === '' || newName.trim() === currentName) {
+        return;
+    }
+    
+    fetch('../api/onedrive/rename.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId, newName: newName.trim() })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File renamed from "${currentName}" to "${newName.trim()}" successfully in OneDrive`, 'success');
+            // Refresh file list
+            listOneDriveFiles();
+        } else {
+            showAlert('Rename failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Rename error:', error);
+        showAlert('Rename failed: Network error', 'error');
+    });
+}
+
+// Delete OneDrive file function
+function deleteOneDriveFile(fileId, fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}" from OneDrive? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch('../api/onedrive/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${fileName}" deleted successfully from OneDrive`, 'success');
+            // Refresh file list
+            listOneDriveFiles();
+        } else {
+            showAlert('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showAlert('Delete failed: Network error', 'error');
+    });
+}
+
+>>>>>>> Stashed changes
 // Fragmentation System Functions
 function checkFragmentationAuthStatus() {
     fetch('../api/fragmentation.php?action=status')
