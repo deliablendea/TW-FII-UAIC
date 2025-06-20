@@ -217,7 +217,10 @@ function displayGoogleFiles(files) {
                         Size: ${size} | Modified: ${modifiedDate}
                         ${file.webViewLink ? ` | <a href="${file.webViewLink}" target="_blank">View in Drive</a>` : ''}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
                         | <button class="rename-btn" onclick="renameGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>
                         | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
 >>>>>>> Stashed changes
@@ -231,7 +234,10 @@ function displayGoogleFiles(files) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 // Rename Google Drive file function
 function renameGoogleFile(fileId, currentName) {
     const newName = prompt(`Rename file:`, currentName);
@@ -462,7 +468,10 @@ function displayDropboxFiles(files) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 // Rename Dropbox file function
 function renameDropboxFile(filePath, currentName) {
     const newName = prompt(`Rename file:`, currentName);
@@ -679,7 +688,10 @@ function displayOneDriveFiles(files) {
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
                         ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="renameOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
                         ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
 >>>>>>> Stashed changes
@@ -693,7 +705,10 @@ function displayOneDriveFiles(files) {
 }
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 // Rename OneDrive file function
 function renameOneDriveFile(fileId, currentName) {
     const newName = prompt(`Rename file:`, currentName);
