@@ -211,10 +211,14 @@ function displayGoogleFiles(files) {
         html += `
             <div class="file-item">
                 <div class="file-info">
-                    <div class="file-name">${escapeHtml(file.name)}</div>
+                    <div class="file-name-container">
+                        <span class="file-name" id="google-name-${file.id}" onclick="startRename('google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)">${escapeHtml(file.name)}</span>
+                        <input type="text" class="file-name-input" id="google-input-${file.id}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('google', '${file.id}')" onkeydown="handleRenameKeydown(event, 'google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">
+                    </div>
                     <div class="file-details">
                         Size: ${size} | Modified: ${modifiedDate}
                         ${file.webViewLink ? ` | <a href="${file.webViewLink}" target="_blank">View in Drive</a>` : ''}
+                        | <button class="rename-btn" onclick="startRename('google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>
                         | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
                     </div>
                 </div>
@@ -223,6 +227,55 @@ function displayGoogleFiles(files) {
     });
     
     fileList.innerHTML = html;
+}
+
+// Google Drive rename function
+function renameGoogleFile(fileId, newName, originalName) {
+    if (!newName || newName.trim() === '') {
+        showAlert('File name cannot be empty', 'error');
+        return;
+    }
+    
+    newName = newName.trim();
+    if (newName === originalName) {
+        return; // No change needed
+    }
+    
+    fetch('../api/drive/rename.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId, newName: newName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File renamed successfully to "${data.name}"`, 'success');
+            // Refresh file list
+            listGoogleFiles();
+        } else {
+            showAlert('Rename failed: ' + data.message, 'error');
+            // Reset the input back to original name
+            const nameSpan = document.getElementById(`google-name-${fileId}`);
+            const nameInput = document.getElementById(`google-input-${fileId}`);
+            if (nameSpan && nameInput) {
+                nameSpan.textContent = originalName;
+                nameInput.value = originalName;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Rename error:', error);
+        showAlert('Rename failed: Network error', 'error');
+        // Reset the input back to original name
+        const nameSpan = document.getElementById(`google-name-${fileId}`);
+        const nameInput = document.getElementById(`google-input-${fileId}`);
+        if (nameSpan && nameInput) {
+            nameSpan.textContent = originalName;
+            nameInput.value = originalName;
+        }
+    });
 }
 
 // Delete Google Drive file function
@@ -396,19 +449,24 @@ function displayDropboxFiles(files) {
     }
     
     let html = '';
-    files.forEach(file => {
+    files.forEach((file, index) => {
         const size = file.size ? formatFileSize(parseInt(file.size)) : 'Unknown size';
         const modifiedDate = file.modified ? new Date(file.modified).toLocaleDateString() : 'Unknown date';
         const fileTypeIcon = file.type === 'folder' ? '📁' : '📄';
+        const safeId = `dropbox-${index}-${Date.now()}`;
         
         html += `
             <div class="file-item">
                 <div class="file-info">
-                    <div class="file-name">${fileTypeIcon} ${escapeHtml(file.name)}</div>
+                    <div class="file-name-container">
+                        <span class="file-name" id="dropbox-name-${safeId}" onclick="startRename('dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)" data-path="${escapeHtml(file.path)}">${fileTypeIcon} ${escapeHtml(file.name)}</span>
+                        <input type="text" class="file-name-input" id="dropbox-input-${safeId}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('dropbox', '${safeId}')" onkeydown="handleRenameKeydown(event, 'dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">
+                    </div>
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.type !== 'folder' ? ` | <a href="https://www.dropbox.com/home${file.path}" target="_blank">View in Dropbox</a>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="startRename('dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
                         ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
@@ -417,6 +475,45 @@ function displayDropboxFiles(files) {
     });
     
     fileList.innerHTML = html;
+}
+
+// Dropbox rename function
+function renameDropboxFile(filePath, newName, originalName) {
+    if (!newName || newName.trim() === '') {
+        showAlert('File name cannot be empty', 'error');
+        return;
+    }
+    
+    newName = newName.trim();
+    if (newName === originalName) {
+        return; // No change needed
+    }
+    
+    fetch('../api/dropbox/rename.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: filePath, newName: newName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File renamed successfully to "${data.name}"`, 'success');
+            // Refresh file list
+            listDropboxFiles();
+        } else {
+            showAlert('Rename failed: ' + data.message, 'error');
+            // Refresh file list to restore original state
+            listDropboxFiles();
+        }
+    })
+    .catch(error => {
+        console.error('Rename error:', error);
+        showAlert('Rename failed: Network error', 'error');
+        // Refresh file list to restore original state
+        listDropboxFiles();
+    });
 }
 
 // Delete Dropbox file function
@@ -598,11 +695,15 @@ function displayOneDriveFiles(files) {
         html += `
             <div class="file-item">
                 <div class="file-info">
-                    <div class="file-name">${fileTypeIcon} ${escapeHtml(file.name)}</div>
+                    <div class="file-name-container">
+                        <span class="file-name" id="onedrive-name-${file.id}" onclick="startRename('onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)">${fileTypeIcon} ${escapeHtml(file.name)}</span>
+                        <input type="text" class="file-name-input" id="onedrive-input-${file.id}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('onedrive', '${file.id}')" onkeydown="handleRenameKeydown(event, 'onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">
+                    </div>
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="startRename('onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
                         ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
@@ -611,6 +712,55 @@ function displayOneDriveFiles(files) {
     });
     
     fileList.innerHTML = html;
+}
+
+// OneDrive rename function
+function renameOneDriveFile(fileId, newName, originalName) {
+    if (!newName || newName.trim() === '') {
+        showAlert('File name cannot be empty', 'error');
+        return;
+    }
+    
+    newName = newName.trim();
+    if (newName === originalName) {
+        return; // No change needed
+    }
+    
+    fetch('../api/onedrive/rename.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId, newName: newName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File renamed successfully to "${data.name}"`, 'success');
+            // Refresh file list
+            listOneDriveFiles();
+        } else {
+            showAlert('Rename failed: ' + data.message, 'error');
+            // Reset the input back to original name
+            const nameSpan = document.getElementById(`onedrive-name-${fileId}`);
+            const nameInput = document.getElementById(`onedrive-input-${fileId}`);
+            if (nameSpan && nameInput) {
+                nameSpan.innerHTML = `📄 ${originalName}`;
+                nameInput.value = originalName;
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Rename error:', error);
+        showAlert('Rename failed: Network error', 'error');
+        // Reset the input back to original name
+        const nameSpan = document.getElementById(`onedrive-name-${fileId}`);
+        const nameInput = document.getElementById(`onedrive-input-${fileId}`);
+        if (nameSpan && nameInput) {
+            nameSpan.innerHTML = `📄 ${originalName}`;
+            nameInput.value = originalName;
+        }
+    });
 }
 
 // Delete OneDrive file function
@@ -1149,5 +1299,64 @@ function escapeHtml(text) {
         "'": '&#039;'
     };
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+
+// Universal rename helper functions
+function startRename(service, fileId, originalName, element) {
+    const nameSpan = document.getElementById(`${service}-name-${fileId}`);
+    const nameInput = document.getElementById(`${service}-input-${fileId}`);
+    
+    if (nameSpan && nameInput) {
+        nameSpan.style.display = 'none';
+        nameInput.style.display = 'inline-block';
+        nameInput.focus();
+        nameInput.select();
+    }
+}
+
+function cancelRename(service, fileId) {
+    const nameSpan = document.getElementById(`${service}-name-${fileId}`);
+    const nameInput = document.getElementById(`${service}-input-${fileId}`);
+    
+    if (nameSpan && nameInput) {
+        nameSpan.style.display = 'inline-block';
+        nameInput.style.display = 'none';
+        // Reset to original value
+        nameInput.value = nameInput.defaultValue;
+    }
+}
+
+function handleRenameKeydown(event, service, fileId, originalName, filePath = null) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        const nameInput = document.getElementById(`${service}-input-${fileId}`);
+        const newName = nameInput.value.trim();
+        
+        // Hide the input and show the span
+        const nameSpan = document.getElementById(`${service}-name-${fileId}`);
+        if (nameSpan && nameInput) {
+            nameSpan.style.display = 'inline-block';
+            nameInput.style.display = 'none';
+        }
+        
+        // Call the appropriate rename function
+        if (service === 'google') {
+            renameGoogleFile(fileId, newName, originalName);
+        } else if (service === 'dropbox') {
+            // For dropbox, get the path from the data attribute
+            const nameSpan = document.getElementById(`${service}-name-${fileId}`);
+            const actualPath = nameSpan ? nameSpan.getAttribute('data-path') : null;
+            if (actualPath) {
+                renameDropboxFile(actualPath, newName, originalName);
+            } else {
+                showAlert('Error: Could not find file path', 'error');
+            }
+        } else if (service === 'onedrive') {
+            renameOneDriveFile(fileId, newName, originalName);
+        }
+    } else if (event.key === 'Escape') {
+        event.preventDefault();
+        cancelRename(service, fileId);
+    }
 }
 

@@ -181,6 +181,67 @@ class DropboxService {
         return ['success' => true, 'message' => 'File deleted successfully'];
     }
     
+    public function renameFile($userId, $fromPath, $newName) {
+        $token = $this->getValidToken($userId);
+        if (!$token) {
+            return ['success' => false, 'message' => 'No valid Dropbox token found'];
+        }
+        
+        // Extract directory from the original path
+        // For Dropbox, paths always start with /
+        $directory = dirname($fromPath);
+        
+        // Handle root directory case
+        if ($directory === '/' || $directory === '.') {
+            $toPath = '/' . $newName;
+        } else {
+            // Ensure directory doesn't end with / unless it's root
+            $directory = rtrim($directory, '/');
+            $toPath = $directory . '/' . $newName;
+        }
+        
+        // Log the paths for debugging
+        error_log("Dropbox rename: from '{$fromPath}' to '{$toPath}'");
+        
+        $url = DropboxConfig::API_URL . '/files/move_v2';
+        
+        $postData = json_encode([
+            'from_path' => $fromPath,
+            'to_path' => $toPath
+        ]);
+        
+        $headers = [
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json'
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postData);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            error_log("Dropbox rename failed: HTTP $httpCode - $response");
+            $errorData = json_decode($response, true);
+            $errorMessage = isset($errorData['error_summary']) ? $errorData['error_summary'] : 'Failed to rename file';
+            return ['success' => false, 'message' => $errorMessage, 'http_code' => $httpCode];
+        }
+        
+        $data = json_decode($response, true);
+        return [
+            'success' => true, 
+            'message' => 'File renamed successfully',
+            'name' => $data['name'] ?? $newName,
+            'path' => $data['path_display'] ?? $toPath
+        ];
+    }
+    
     public function downloadFile($userId, $path) {
         $token = $this->getValidToken($userId);
         if (!$token) {

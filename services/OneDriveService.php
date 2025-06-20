@@ -156,6 +156,50 @@ class OneDriveService {
         return ['success' => true, 'message' => 'File deleted successfully'];
     }
     
+    public function renameFile($userId, $fileId, $newName) {
+        $token = $this->getValidToken($userId);
+        if (!$token) {
+            return ['success' => false, 'message' => 'No valid OneDrive token found'];
+        }
+        
+        // Sanitize the filename
+        $sanitizedName = $this->sanitizeFileName($newName);
+        
+        $url = OneDriveConfig::API_URL . '/me/drive/items/' . urlencode($fileId);
+        
+        $metadata = [
+            'name' => $sanitizedName
+        ];
+        
+        $headers = [
+            'Authorization: Bearer ' . $token,
+            'Content-Type: application/json'
+        ];
+        
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($metadata));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode !== 200) {
+            error_log("OneDrive rename failed: HTTP $httpCode - $response");
+            return ['success' => false, 'message' => 'Failed to rename file', 'http_code' => $httpCode];
+        }
+        
+        $data = json_decode($response, true);
+        return [
+            'success' => true, 
+            'message' => 'File renamed successfully',
+            'name' => $data['name'] ?? $sanitizedName
+        ];
+    }
+    
     public function downloadFile($userId, $fileId) {
         $token = $this->getValidToken($userId);
         if (!$token) {
