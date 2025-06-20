@@ -701,6 +701,7 @@
             setTimeout(() => {
                 checkFragmentationAuthStatus();
                 setupFragmentationFileUpload();
+                setupFragmentationStatusRefresh();
             }, 1000);
         });
         
@@ -713,6 +714,24 @@
                     return response.json();
                 })
                 .then(data => {
+                    console.log('🔍 Fragmentation status response:', data);
+                    console.log('🔍 authenticated_providers type:', typeof data.authenticated_providers);
+                    console.log('🔍 authenticated_providers value:', data.authenticated_providers);
+                    console.log('🔍 is array?', Array.isArray(data.authenticated_providers));
+                    
+                    if (data.success === false && data.message === 'Not authenticated') {
+                        // User is not logged in, show appropriate message
+                        document.getElementById('fragmentationStatusCard').innerHTML = `
+                            <div class="error">
+                                <h4>❌ Authentication Required</h4>
+                                <p>You need to be logged in to use the fragmentation system.</p>
+                                <p><a href="login.html">Please log in here</a></p>
+                            </div>
+                        `;
+                        document.getElementById('fragmentationUploadSection').style.display = 'none';
+                        return;
+                    }
+                    
                     fragmentationAuthStatus = data;
                     updateFragmentationStatusCard();
                     if (data.fragmentation_available) {
@@ -736,9 +755,9 @@
                     <h4>✅ Fragmentation Available</h4>
                     <p>All required cloud services are connected.</p>
                     <div class="provider-status">
-                        ${fragmentationAuthStatus.authenticated_providers.map(provider => 
+                        ${fragmentationAuthStatus.authenticated_providers && Array.isArray(fragmentationAuthStatus.authenticated_providers) ? fragmentationAuthStatus.authenticated_providers.map(provider => 
                             `<span class="provider connected">${provider.toUpperCase()}</span>`
-                        ).join('')}
+                        ).join('') : ''}
                     </div>
                 `;
                 uploadSection.style.display = 'block';
@@ -748,15 +767,15 @@
                     <h4>⚠️ Authentication Required</h4>
                     <p>Fragmentation requires authentication with all cloud services.</p>
                     <div class="provider-status">
-                        ${fragmentationAuthStatus.authenticated_providers ? fragmentationAuthStatus.authenticated_providers.map(provider => 
+                        ${fragmentationAuthStatus.authenticated_providers && Array.isArray(fragmentationAuthStatus.authenticated_providers) ? fragmentationAuthStatus.authenticated_providers.map(provider => 
                             `<span class="provider connected">${provider.toUpperCase()}</span>`
                         ).join('') : ''}
-                        ${fragmentationAuthStatus.missing_providers ? fragmentationAuthStatus.missing_providers.map(provider => 
+                        ${fragmentationAuthStatus.missing_providers && Array.isArray(fragmentationAuthStatus.missing_providers) ? fragmentationAuthStatus.missing_providers.map(provider => 
                             `<span class="provider disconnected">${provider.toUpperCase()}</span>`
                         ).join('') : ''}
                     </div>
                     <p style="margin-top: 15px;">
-                        Please authenticate with: <strong>${fragmentationAuthStatus.missing_providers ? fragmentationAuthStatus.missing_providers.join(', ') : 'all providers'}</strong>
+                        Please authenticate with: <strong>${fragmentationAuthStatus.missing_providers && Array.isArray(fragmentationAuthStatus.missing_providers) ? fragmentationAuthStatus.missing_providers.join(', ') : 'all providers'}</strong>
                     </p>
                 `;
                 uploadSection.style.display = 'none';
@@ -1045,20 +1064,48 @@ Progress: ${integrity.completion_percentage}%`);
         // Function to refresh fragmentation status when cloud services connect/disconnect
         function refreshFragmentationStatus() {
             if (fragmentationAuthStatus !== null) {
+                console.log('Refreshing fragmentation status due to cloud service change...');
                 checkFragmentationAuthStatus();
             }
         }
         
-        // Override the existing cloud service status update functions to refresh fragmentation status
-        const originalUpdateGoogleUI = window.updateGoogleUI;
-        if (typeof originalUpdateGoogleUI === 'function') {
-            window.updateGoogleUI = function(connected) {
-                originalUpdateGoogleUI(connected);
-                setTimeout(refreshFragmentationStatus, 500);
-            };
+        // Override the existing cloud service UI update functions to refresh fragmentation status
+        // We need to do this after the page loads to ensure the original functions exist
+        function setupFragmentationStatusRefresh() {
+            // Override Google Drive UI update function
+            if (typeof window.updateGoogleUI === 'function') {
+                const originalUpdateGoogleUI = window.updateGoogleUI;
+                window.updateGoogleUI = function(connected) {
+                    originalUpdateGoogleUI(connected);
+                    console.log('Google Drive status changed to:', connected);
+                    setTimeout(refreshFragmentationStatus, 500); // Small delay to ensure backend is updated
+                };
+            }
+            
+            // Override Dropbox UI update function
+            if (typeof window.updateDropboxUI === 'function') {
+                const originalUpdateDropboxUI = window.updateDropboxUI;
+                window.updateDropboxUI = function(connected) {
+                    originalUpdateDropboxUI(connected);
+                    console.log('Dropbox status changed to:', connected);
+                    setTimeout(refreshFragmentationStatus, 500); // Small delay to ensure backend is updated
+                };
+            }
+            
+            // Override OneDrive UI update function
+            if (typeof window.updateOneDriveUI === 'function') {
+                const originalUpdateOneDriveUI = window.updateOneDriveUI;
+                window.updateOneDriveUI = function(connected) {
+                    originalUpdateOneDriveUI(connected);
+                    console.log('OneDrive status changed to:', connected);
+                    setTimeout(refreshFragmentationStatus, 500); // Small delay to ensure backend is updated
+                };
+            }
+            
+            console.log('Fragmentation status refresh hooks installed');
         }
         
-        // Add refresh button for troubleshooting
+        // Add refresh button for manual refresh
         function addFragmentationRefreshButton() {
             const statusCard = document.getElementById('fragmentationStatusCard');
             if (statusCard && !statusCard.querySelector('.refresh-btn')) {
@@ -1066,13 +1113,43 @@ Progress: ${integrity.completion_percentage}%`);
                 refreshBtn.className = 'btn refresh-btn';
                 refreshBtn.textContent = '🔄 Refresh Status';
                 refreshBtn.style.marginTop = '10px';
-                refreshBtn.onclick = checkFragmentationAuthStatus;
+                refreshBtn.onclick = function() {
+                    refreshBtn.textContent = '🔄 Refreshing...';
+                    refreshBtn.disabled = true;
+                    checkFragmentationAuthStatus();
+                    setTimeout(() => {
+                        refreshBtn.textContent = '🔄 Refresh Status';
+                        refreshBtn.disabled = false;
+                    }, 2000);
+                };
                 statusCard.appendChild(refreshBtn);
             }
         }
         
         // Add refresh button after initial load
         setTimeout(addFragmentationRefreshButton, 2000);
+        
+        // Also listen for OAuth callback completions by monitoring URL changes
+        let lastUrl = location.href;
+        new MutationObserver(() => {
+            const currentUrl = location.href;
+            if (currentUrl !== lastUrl) {
+                lastUrl = currentUrl;
+                // Check if we're returning from OAuth
+                if (currentUrl.includes('oauth') || currentUrl.includes('code=')) {
+                    console.log('OAuth callback detected, refreshing fragmentation status');
+                    setTimeout(refreshFragmentationStatus, 1000);
+                }
+            }
+        }).observe(document, { subtree: true, childList: true });
+        
+        // Handle page visibility changes (when user comes back from OAuth)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('Page became visible, checking for OAuth completion');
+                setTimeout(refreshFragmentationStatus, 500);
+            }
+        });
     </script>
 </body>
 </html> 
