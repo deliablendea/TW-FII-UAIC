@@ -200,10 +200,7 @@ class GoogleDriveService {
             return [
                 'success' => true, 
                 'message' => 'File renamed successfully',
-                'file' => [
-                    'id' => $data['id'],
-                    'name' => $data['name']
-                ]
+                'new_name' => $data['name']
             ];
         } else {
             error_log("Google Drive rename failed: HTTP $httpCode - $response");

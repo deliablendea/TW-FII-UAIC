@@ -181,30 +181,44 @@ class DropboxService {
         return ['success' => true, 'message' => 'File deleted successfully'];
     }
     
-    public function renameFile($userId, $currentPath, $newName) {
+    public function renameFile($userId, $fromPath, $newName) {
         $token = $this->getValidToken($userId);
         if (!$token) {
             return ['success' => false, 'message' => 'No valid Dropbox token found'];
         }
         
-        // Extract directory path and create new path with new name
-        $pathParts = pathinfo($currentPath);
-        $directory = isset($pathParts['dirname']) && $pathParts['dirname'] !== '.' ? $pathParts['dirname'] : '';
+        // Get the directory path and combine with new name
+        $pathInfo = pathinfo($fromPath);
+        $dirname = $pathInfo['dirname'];
+        $originalExtension = isset($pathInfo['extension']) ? $pathInfo['extension'] : '';
         
-        // Ensure directory path starts with /
-        if ($directory && !str_starts_with($directory, '/')) {
-            $directory = '/' . $directory;
+        // If the new name doesn't have an extension but the original file did, preserve it
+        if ($originalExtension && !pathinfo($newName, PATHINFO_EXTENSION)) {
+            $newName = $newName . '.' . $originalExtension;
         }
         
-        // Create new path
-        $newPath = $directory === '' || $directory === '/' ? '/' . $newName : $directory . '/' . $newName;
+        // Handle root directory case
+        if ($dirname === '.' || $dirname === '/') {
+            $toPath = '/' . $newName;
+        } else {
+            // Ensure directory path starts with /
+            if (!str_starts_with($dirname, '/')) {
+                $dirname = '/' . $dirname;
+            }
+            $toPath = $dirname . '/' . $newName;
+        }
+        
+        // Clean up double slashes
+        $toPath = str_replace('//', '/', $toPath);
+        
+        // Debug logging
+        error_log("Dropbox rename: From '$fromPath' to '$toPath'");
         
         $url = DropboxConfig::API_URL . '/files/move_v2';
         
         $postData = json_encode([
-            'from_path' => $currentPath,
-            'to_path' => $newPath,
-            'allow_shared_folder' => false,
+            'from_path' => $fromPath,
+            'to_path' => $toPath,
             'autorename' => false
         ]);
         
@@ -226,21 +240,20 @@ class DropboxService {
         
         if ($httpCode !== 200) {
             error_log("Dropbox rename failed: HTTP $httpCode - $response");
-            return ['success' => false, 'message' => 'Failed to rename file', 'http_code' => $httpCode];
+            $errorData = json_decode($response, true);
+            $errorMessage = 'Failed to rename file';
+            if ($errorData && isset($errorData['error_summary'])) {
+                $errorMessage .= ': ' . $errorData['error_summary'];
+            }
+            return ['success' => false, 'message' => $errorMessage, 'http_code' => $httpCode];
         }
         
         $data = json_decode($response, true);
-        if (!$data) {
-            return ['success' => false, 'message' => 'Invalid response from Dropbox'];
-        }
-        
         return [
             'success' => true, 
             'message' => 'File renamed successfully',
-            'file' => [
-                'name' => $data['name'],
-                'path' => $data['path_display']
-            ]
+            'new_name' => $data['name'],
+            'new_path' => $data['path_display']
         ];
     }
     

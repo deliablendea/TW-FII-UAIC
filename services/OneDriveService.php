@@ -164,7 +164,7 @@ class OneDriveService {
         
         $url = OneDriveConfig::API_URL . '/me/drive/items/' . urlencode($fileId);
         
-        $updateData = json_encode([
+        $metadata = json_encode([
             'name' => $newName
         ]);
         
@@ -176,7 +176,7 @@ class OneDriveService {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $updateData);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $metadata);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         
@@ -190,17 +190,10 @@ class OneDriveService {
         }
         
         $data = json_decode($response, true);
-        if (!$data) {
-            return ['success' => false, 'message' => 'Invalid response from OneDrive'];
-        }
-        
         return [
             'success' => true, 
             'message' => 'File renamed successfully',
-            'file' => [
-                'id' => $data['id'],
-                'name' => $data['name']
-            ]
+            'new_name' => $data['name']
         ];
     }
     

@@ -1,4 +1,3 @@
-
 let fragmentationAuthStatus = null;
 let selectedFragmentationFile = null;
 
@@ -216,14 +215,8 @@ function displayGoogleFiles(files) {
                     <div class="file-details">
                         Size: ${size} | Modified: ${modifiedDate}
                         ${file.webViewLink ? ` | <a href="${file.webViewLink}" target="_blank">View in Drive</a>` : ''}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
                         | <button class="rename-btn" onclick="renameGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>
                         | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
->>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -233,15 +226,10 @@ function displayGoogleFiles(files) {
     fileList.innerHTML = html;
 }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
 // Rename Google Drive file function
 function renameGoogleFile(fileId, currentName) {
     const newName = prompt(`Rename file:`, currentName);
-    if (!newName || newName.trim() === '' || newName.trim() === currentName) {
+    if (!newName || newName.trim() === '' || newName === currentName) {
         return;
     }
     
@@ -255,7 +243,7 @@ function renameGoogleFile(fileId, currentName) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showAlert(`File renamed from "${currentName}" to "${newName.trim()}" successfully in Google Drive`, 'success');
+            showAlert(`File renamed to "${data.new_name}" successfully in Google Drive`, 'success');
             // Refresh file list
             listGoogleFiles();
         } else {
@@ -297,7 +285,6 @@ function deleteGoogleFile(fileId, fileName) {
     });
 }
 
->>>>>>> Stashed changes
 // Dropbox Functions
 function checkDropboxStatus() {
     console.log('Checking Dropbox status...');
@@ -452,12 +439,9 @@ function displayDropboxFiles(files) {
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
-<<<<<<< Updated upstream
-=======
                         ${file.type !== 'folder' ? ` | <a href="https://www.dropbox.com/home${file.path}" target="_blank">View in Dropbox</a>` : ''}
                         ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="renameDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
                         ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
->>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -467,15 +451,10 @@ function displayDropboxFiles(files) {
     fileList.innerHTML = html;
 }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
 // Rename Dropbox file function
 function renameDropboxFile(filePath, currentName) {
     const newName = prompt(`Rename file:`, currentName);
-    if (!newName || newName.trim() === '' || newName.trim() === currentName) {
+    if (!newName || newName.trim() === '' || newName === currentName) {
         return;
     }
     
@@ -489,7 +468,7 @@ function renameDropboxFile(filePath, currentName) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showAlert(`File renamed from "${currentName}" to "${newName.trim()}" successfully in Dropbox`, 'success');
+            showAlert(`File renamed to "${data.new_name}" successfully in Dropbox`, 'success');
             // Refresh file list
             listDropboxFiles();
         } else {
@@ -531,7 +510,6 @@ function deleteDropboxFile(filePath, fileName) {
     });
 }
 
->>>>>>> Stashed changes
 // OneDrive Functions
 function checkOneDriveStatus() {
     console.log('Checking OneDrive status...');
@@ -687,14 +665,8 @@ function displayOneDriveFiles(files) {
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
                         ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="renameOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
                         ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
->>>>>>> Stashed changes
                     </div>
                 </div>
             </div>
@@ -704,15 +676,10 @@ function displayOneDriveFiles(files) {
     fileList.innerHTML = html;
 }
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
 // Rename OneDrive file function
 function renameOneDriveFile(fileId, currentName) {
     const newName = prompt(`Rename file:`, currentName);
-    if (!newName || newName.trim() === '' || newName.trim() === currentName) {
+    if (!newName || newName.trim() === '' || newName === currentName) {
         return;
     }
     
@@ -726,7 +693,7 @@ function renameOneDriveFile(fileId, currentName) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            showAlert(`File renamed from "${currentName}" to "${newName.trim()}" successfully in OneDrive`, 'success');
+            showAlert(`File renamed to "${data.new_name}" successfully in OneDrive`, 'success');
             // Refresh file list
             listOneDriveFiles();
         } else {
@@ -768,7 +735,6 @@ function deleteOneDriveFile(fileId, fileName) {
     });
 }
 
->>>>>>> Stashed changes
 // Fragmentation System Functions
 function checkFragmentationAuthStatus() {
     fetch('../api/fragmentation.php?action=status')

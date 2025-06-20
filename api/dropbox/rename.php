@@ -15,8 +15,8 @@ try {
         exit;
     }
     
-    // Check if this is a PATCH request or POST request
-    if ($_SERVER['REQUEST_METHOD'] !== 'PATCH' && $_SERVER['REQUEST_METHOD'] !== 'POST') {
+    // Check if this is a POST or PATCH request
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST' && $_SERVER['REQUEST_METHOD'] !== 'PATCH') {
         http_response_code(405);
         echo json_encode(['success' => false, 'message' => 'Method not allowed']);
         exit;
@@ -26,44 +26,38 @@ try {
     $filePath = null;
     $newName = null;
     
-    if ($_SERVER['REQUEST_METHOD'] === 'PATCH') {
-        // For PATCH requests, get data from JSON body
-        $input = json_decode(file_get_contents('php://input'), true);
-        if (isset($input['path'])) {
-            $filePath = $input['path'];
-        }
-        if (isset($input['newName'])) {
-            $newName = $input['newName'];
-        }
-    } else {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // For POST requests, check POST data or JSON body
-        if (isset($_POST['path'])) {
+        if (isset($_POST['path']) && isset($_POST['newName'])) {
             $filePath = $_POST['path'];
-        }
-        if (isset($_POST['newName'])) {
             $newName = $_POST['newName'];
-        }
-        
-        if (!$filePath || !$newName) {
+        } else {
             $input = json_decode(file_get_contents('php://input'), true);
-            if (isset($input['path'])) {
+            if (isset($input['path']) && isset($input['newName'])) {
                 $filePath = $input['path'];
-            }
-            if (isset($input['newName'])) {
                 $newName = $input['newName'];
             }
         }
+    } else {
+        // For PATCH requests, check JSON body
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (isset($input['path']) && isset($input['newName'])) {
+            $filePath = $input['path'];
+            $newName = $input['newName'];
+        }
     }
     
-    if (!$filePath) {
+    if (!$filePath || !$newName) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Missing file path']);
+        echo json_encode(['success' => false, 'message' => 'Missing file path or new name']);
         exit;
     }
     
-    if (!$newName || trim($newName) === '') {
+    // Validate new name
+    $newName = trim($newName);
+    if (empty($newName)) {
         http_response_code(400);
-        echo json_encode(['success' => false, 'message' => 'Missing or empty new file name']);
+        echo json_encode(['success' => false, 'message' => 'New name cannot be empty']);
         exit;
     }
     
@@ -71,8 +65,14 @@ try {
     $db = Database::getInstance();
     $dropboxService = new DropboxService($db->getConnection());
     
+    // Add debug logging
+    error_log("Dropbox rename attempt - Path: $filePath, New Name: $newName");
+    
     // Rename file in Dropbox
-    $result = $dropboxService->renameFile($_SESSION['user_id'], $filePath, trim($newName));
+    $result = $dropboxService->renameFile($_SESSION['user_id'], $filePath, $newName);
+    
+    // Log the result for debugging
+    error_log("Dropbox rename result: " . json_encode($result));
     
     if ($result['success']) {
         echo json_encode($result);
