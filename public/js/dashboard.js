@@ -1,4 +1,3 @@
-
 let fragmentationAuthStatus = null;
 let selectedFragmentationFile = null;
 
@@ -216,6 +215,7 @@ function displayGoogleFiles(files) {
                     <div class="file-details">
                         Size: ${size} | Modified: ${modifiedDate}
                         ${file.webViewLink ? ` | <a href="${file.webViewLink}" target="_blank">View in Drive</a>` : ''}
+                        | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
                     </div>
                 </div>
             </div>
@@ -223,6 +223,35 @@ function displayGoogleFiles(files) {
     });
     
     fileList.innerHTML = html;
+}
+
+// Delete Google Drive file function
+function deleteGoogleFile(fileId, fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}" from Google Drive? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch('../api/drive/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${fileName}" deleted successfully from Google Drive`, 'success');
+            // Refresh file list
+            listGoogleFiles();
+        } else {
+            showAlert('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showAlert('Delete failed: Network error', 'error');
+    });
 }
 
 // Dropbox Functions
@@ -379,6 +408,8 @@ function displayDropboxFiles(files) {
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
+                        ${file.type !== 'folder' ? ` | <a href="https://www.dropbox.com/home${file.path}" target="_blank">View in Dropbox</a>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -386,6 +417,35 @@ function displayDropboxFiles(files) {
     });
     
     fileList.innerHTML = html;
+}
+
+// Delete Dropbox file function
+function deleteDropboxFile(filePath, fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}" from Dropbox? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch('../api/dropbox/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ path: filePath })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${fileName}" deleted successfully from Dropbox`, 'success');
+            // Refresh file list
+            listDropboxFiles();
+        } else {
+            showAlert('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showAlert('Delete failed: Network error', 'error');
+    });
 }
 
 // OneDrive Functions
@@ -543,6 +603,7 @@ function displayOneDriveFiles(files) {
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
+                        ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -550,6 +611,35 @@ function displayOneDriveFiles(files) {
     });
     
     fileList.innerHTML = html;
+}
+
+// Delete OneDrive file function
+function deleteOneDriveFile(fileId, fileName) {
+    if (!confirm(`Are you sure you want to delete "${fileName}" from OneDrive? This action cannot be undone.`)) {
+        return;
+    }
+    
+    fetch('../api/onedrive/delete.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ fileId: fileId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(`File "${fileName}" deleted successfully from OneDrive`, 'success');
+            // Refresh file list
+            listOneDriveFiles();
+        } else {
+            showAlert('Delete failed: ' + data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete error:', error);
+        showAlert('Delete failed: Network error', 'error');
+    });
 }
 
 // Fragmentation System Functions
