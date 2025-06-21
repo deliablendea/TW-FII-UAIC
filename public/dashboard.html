@@ -4,21 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>cloud9</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/dashboard.css">
 </head>
-<body>
+<body class="dashboard-page">
     <div class="dashboard-container">
-        <div class="welcome-card">
-            <h1>Cloud Storage Dashboard</h1>
-            <p>Advanced Modular File Management System</p>
-            <div class="user-info">
-                <p>Logged in as: <span id="userName"></span></p>
-                <p>Email: <span id="userEmail"></span></p>
-            </div>
-            <div class="user-actions">
-                <button class="logout-btn" onclick="logout()">Logout</button>
-                <button class="delete-account-btn" onclick="showDeleteAccountModal()">Delete Account</button>
+        <div class="dashboard__header">
+            <div class="dashboard__header-container">
+                <div class="dashboard__left-section">
+                    <div class="dashboard__brand">
+                        <img src="../assets/WhiteLogo.png" alt="Cloud9 Logo" class="dashboard__logo-image">
+                    </div>
+                    
+                    <div class="dashboard__user-info">
+                        <p class="dashboard__user-name">Good day, <span id="userName"></span></p>
+                        <p class="dashboard__user-email">Email: <span id="userEmail"></span></p>
+                    </div>
+                </div>
+                
+                <div class="dashboard__navigation">
+                    <a href="faqs.html" class="dashboard__nav-link">FAQs</a>
+                    <a onclick="showDeleteAccountModal()" class="dashboard__nav-link" id="authLink">DELETE ACCOUNT</a>
+                    <a href="index.html" class="dashboard__nav-button" onclick="logout()">LOG OUT</a>
+                </div>
             </div>
         </div>
         
@@ -62,160 +73,300 @@
             </div>
         </div>
         
-        <div id="alerts"></div>
-        
-        <!-- Fragmentation System Section -->
-        <div class="fragmentation-section">
-            <div class="fragmentation-header">
-                <div class="fragmentation-title">
-                    🗂️ File Fragmentation System
-                </div>
-                <div class="fragmentation-subtitle">
-                    Securely store large files across multiple cloud services with redundancy
-                </div>
-            </div>
-            
-            <div id="fragmentationStatusCard" class="status-card">
-                <div class="loading">Checking authentication status...</div>
-            </div>
-            
-            <div id="fragmentationUploadSection" class="upload-section" style="display: none;">
-                <h3>Upload File for Fragmentation</h3>
-                <p>Drop a file here or click to select</p>
-                <input type="file" id="fragmentationFileInput" style="display: none;">
-                <button class="btn" onclick="document.getElementById('fragmentationFileInput').click()">Select File</button>
+        <!-- Main Dashboard Content -->
+        <div class="dashboard__main">
+            <div class="dashboard__content">
+                <!-- Alerts Section -->
+                <div id="alerts"></div>
                 
-                <div style="display: flex; gap: 20px; margin-top: 20px; justify-content: center;">
-                    <div class="form-group" style="max-width: 200px;">
-                        <label for="chunkSize">Chunk Size:</label>
-                        <select id="chunkSize" class="form-control">
-                            <option value="524288">512 KB</option>
-                            <option value="1048576" selected>1 MB</option>
-                            <option value="2097152">2 MB</option>
-                            <option value="5242880">5 MB</option>
-                        </select>
+                <!-- File Fragmentation System Section -->
+                <div class="fragmentation-system">
+                    <div class="fragmentation-content">
+                        <!-- Left Column: Content -->
+                        <div class="fragmentation-left">
+                            <div class="system-header">
+                                <h1 class="system-title">File Fragmentation System</h1>
+                                <p class="system-subtitle">Securely store large files across multiple cloud services with redundancy</p>
+                            </div>
+                            
+                            <div class="auth-status">
+                                <p class="auth-label"><strong>Authentication required.</strong> <span id="authRequiredText">Please authenticate with: <strong id="missingProviders">Dropbox, OneDrive</strong></span></p>
+                                <div class="auth-badges">
+                                   <span id="googleAuthBadge" class="auth-badge google">GOOGLE</span>
+                                   <span id="dropboxAuthBadge" class="auth-badge dropbox">DROPBOX</span>
+                                   <span id="onedriveAuthBadge" class="auth-badge onedrive">ONEDRIVE</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Hidden element needed for JavaScript logic -->
+                            <div id="fragmentationStatusCard" style="display: none;"></div>
+                            
+                            <div id="fragmentationUploadSection" class="upload-section" style="display: none;">
+                                <div class="upload-card">
+                                    <div class="upload-header">
+                                        <h3>Upload File for Fragmentation</h3>
+                                    </div>
+                                    
+                                    <div class="file-selection">
+                                        <div class="file-drop-zone">
+                                            <div class="file-icon">📁</div>
+                                            <p class="file-text">Drop a file here or click to select</p>
+                                            <button class="select-file-btn" onclick="document.getElementById('fragmentationFileInput').click()">SELECT FILE</button>
+                                            <input type="file" id="fragmentationFileInput" style="display: none;">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="upload-options">
+                                        <div class="option-group">
+                                            <label for="chunkSize">Chunk Size:</label>
+                                            <select id="chunkSize" class="option-select">
+                                                <option value="524288">512 KB</option>
+                                                <option value="1048576" selected>1 MB</option>
+                                                <option value="2097152">2 MB</option>
+                                                <option value="5242880">5 MB</option>
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="option-group">
+                                            <label for="redundancyLevel">Redundancy Level:</label>
+                                            <select id="redundancyLevel" class="option-select">
+                                                <option value="1">1 (Single copy)</option>
+                                                <option value="2" selected>2 (Double redundancy)</option>
+                                                <option value="3">3 (Triple redundancy)</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <button id="fragmentationUploadBtn" class="upload-btn" onclick="uploadFragmentedFile()" disabled>Upload & Fragment</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Right Column: Image -->
+                        <div class="fragmentation-right">
+                            <img src="../assets/MainImage.png" alt="File Fragmentation Illustration" class="main-image">
+                        </div>
                     </div>
+                </div>
+                <div class="fragmented-files">
+                    <h3 class="files-title">Fragmented Files</h3>
+                    <div id="fragmentationFilesList" class="files-list">
+                        <div class="loading">Loading files...</div>
+                    </div>
+                </div>
+                <!-- Individual Cloud Service Management -->
+                <div class="cloud-services">
+                    <h2 class="services-title">Individual Cloud Service Management</h2>
                     
-                    <div class="form-group" style="max-width: 200px;">
-                        <label for="redundancyLevel">Redundancy Level:</label>
-                        <select id="redundancyLevel" class="form-control">
-                            <option value="1">1 (Single copy)</option>
-                            <option value="2" selected>2 (Double redundancy)</option>
-                            <option value="3">3 (Triple redundancy)</option>
-                        </select>
+                    <div class="services-grid">
+                        <!-- Google Drive Card -->
+                        <div class="service-card google-drive">
+                            <div class="service-header">
+                                <div class="service-info">
+                                    <div class="service-icon">
+                                        <img src="../assets/Drive.png" alt="Google Drive" class="service-logo">
+                                    </div>
+                                    <span class="service-name">Google Drive</span>
+                                </div>
+                                <span id="googleStatus" class="status-badge status-disconnected">DISCONNECTED</span>
+                            </div>
+                            
+                            <div id="googleActions" class="service-actions">
+                                <button id="googleConnectBtn" class="action-btn connect-btn" onclick="connectGoogle()">CONNECT TO GOOGLE DRIVE</button>
+                                <button id="googleDisconnectBtn" class="action-btn disconnect-btn" onclick="disconnectGoogle()" style="display: none;">DISCONNECT FROM GOOGLE DRIVE</button>
+                            </div>
+                            
+                            <div id="googleFileOps" class="file-operations" style="display: none;">
+                                <div class="file-upload">
+                                    <input type="file" id="googleFileInput" class="file-input" onchange="uploadToGoogle()">
+                                    <button class="upload-btn" onclick="document.getElementById('googleFileInput').click()">
+                                        Upload File
+                                    </button>
+                                    <button class="list-btn" onclick="listGoogleFiles()">
+                                        List Files
+                                    </button>
+                                </div>
+                                <div id="googleFileList" class="file-list" style="display: none;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Dropbox Card -->
+                        <div class="service-card dropbox">
+                            <div class="service-header">
+                                <div class="service-info">
+                                    <div class="service-icon">
+                                        <img src="../assets/Dropbox.png" alt="Dropbox" class="service-logo">
+                                    </div>
+                                    <span class="service-name">Dropbox</span>
+                                </div>
+                                <span id="dropboxStatus" class="status-badge status-disconnected">DISCONNECTED</span>
+                            </div>
+                            
+                            <div id="dropboxActions" class="service-actions">
+                                <button id="dropboxConnectBtn" class="action-btn connect-btn" onclick="connectDropbox()">CONNECT TO DROPBOX</button>
+                                <button id="dropboxDisconnectBtn" class="action-btn disconnect-btn" onclick="disconnectDropbox()" style="display: none;">DISCONNECT FROM DROPBOX</button>
+                            </div>
+                            
+                            <div id="dropboxFileOps" class="file-operations" style="display: none;">
+                                <div class="file-upload">
+                                    <input type="file" id="dropboxFileInput" class="file-input" onchange="uploadToDropbox()">
+                                    <button class="upload-btn" onclick="document.getElementById('dropboxFileInput').click()">
+                                        Upload File
+                                    </button>
+                                    <button class="list-btn" onclick="listDropboxFiles()">
+                                        List Files
+                                    </button>
+                                </div>
+                                <div id="dropboxFileList" class="file-list" style="display: none;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- OneDrive Card -->
+                        <div class="service-card onedrive">
+                            <div class="service-header">
+                                <div class="service-info">
+                                    <div class="service-icon">
+                                        <img src="../assets/OneDrive.png" alt="OneDrive" class="service-logo">
+                                    </div>
+                                    <span class="service-name">OneDrive</span>
+                                </div>
+                                <span id="onedriveStatus" class="status-badge status-disconnected">DISCONNECTED</span>
+                            </div>
+                            
+                            <div id="onedriveActions" class="service-actions">
+                                <button id="onedriveConnectBtn" class="action-btn connect-btn" onclick="connectOneDrive()">CONNECT TO ONEDRIVE</button>
+                                <button id="onedriveDisconnectBtn" class="action-btn disconnect-btn" onclick="disconnectOneDrive()" style="display: none;">DISCONNECT FROM ONEDRIVE</button>
+                            </div>
+                            
+                            <div id="onedriveFileOps" class="file-operations" style="display: none;">
+                                <div class="file-upload">
+                                    <input type="file" id="onedriveFileInput" class="file-input" onchange="uploadToOneDrive()">
+                                    <button class="upload-btn" onclick="document.getElementById('onedriveFileInput').click()">
+                                        Upload File
+                                    </button>
+                                    <button class="list-btn" onclick="listOneDriveFiles()">
+                                        List Files
+                                    </button>
+                                </div>
+                                <div id="onedriveFileList" class="file-list" style="display: none;"></div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <button id="fragmentationUploadBtn" class="btn" onclick="uploadFragmentedFile()" disabled>Upload & Fragment</button>
-            </div>
-            
-            <div class="files-list">
-                <h3>Fragmented Files</h3>
-                <div id="fragmentationFilesList">
-                    <div class="loading">Loading files...</div>
                 </div>
             </div>
         </div>
         
-        <div class="section-divider">
-            <span>Individual Cloud Service Management</span>
-        </div>
-        
-        <div class="cloud-services">
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-title">
-                        <svg class="service-icon" viewBox="0 0 24 24" fill="#4285f4">
-                            <path d="M6.28 3l5.55 9.5L18.09 3h1.8L13.77 12.5l6.12 10.5h-1.8l-5.55-9.5L6.28 24H4.48l6.12-10.5L4.48 3h1.8z"/>
-                        </svg>
-                        Google Drive
+        <div class="dashboard__footer">
+            <div class="dashboard__footer-container">
+                <div class="dashboard__footer-left">
+                    <div class="dashboard__footer-brand">
+                        <img src="../assets/WhiteLogo.png" alt="Cloud9" class="dashboard__footer-logo">
+                        <div class="dashboard__footer-brand-text">
+                            <span class="dashboard__footer-text">cloud9</span>
+                            <p class="dashboard__footer-tagline">Put multiple clouds into one</p>
+                        </div>
                     </div>
-                    <span id="googleStatus" class="status-badge status-disconnected">Disconnected</span>
                 </div>
-                
-                <div id="googleActions">
-                    <button id="googleConnectBtn" class="connect-btn" onclick="connectGoogle()">Connect to Google Drive</button>
-                    <button id="googleDisconnectBtn" class="disconnect-btn" onclick="disconnectGoogle()" style="display: none;">Disconnect</button>
-                </div>
-                
-                <div id="googleFileOps" style="display: none;">
-                    <div class="file-upload">
-                        <input type="file" id="googleFileInput" class="file-input" onchange="uploadToGoogle()">
-                        <button class="upload-btn" onclick="document.getElementById('googleFileInput').click()">
-                            📁 Upload File
-                        </button>
-                        <button class="list-btn" onclick="listGoogleFiles()">
-                            📋 List Files
-                        </button>
+                <p class="dashboard__footer-copyright">© 2025 cloud9. All rights reserved.</p>
+                <div class="dashboard__footer-right">
+                    <div class="dashboard__footer-contact">
+                        <div class="dashboard__footer-contact-item">
+                            <img src="../assets/EmailIcon.svg" alt="Email" class="dashboard__footer-icon">
+                            <span class="dashboard__footer-contact-text">support@cloud9.com</span>
+                        </div>
+                        <div class="dashboard__footer-contact-item">
+                            <img src="../assets/PinIcon.svg" alt="Location" class="dashboard__footer-icon">
+                            <span class="dashboard__footer-contact-text">General Henri Mathias Berthelot 16, Iași 700259</span>
+                        </div>
+                                            <div class="dashboard__footer-links">
+                        <a href="privacy.html" class="dashboard__footer-link">Privacy Policy</a>
+                        <span class="dashboard__footer-separator">|</span>
+                        <a href="terms.html" class="dashboard__footer-link">Terms of Use</a>
                     </div>
-                    <div id="googleFileList" class="file-list" style="display: none;"></div>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-title">
-                        <svg class="service-icon" viewBox="0 0 24 24" fill="#0061ff">
-                            <path d="M12 0L0 7l12 5 12-5-12-7z"/>
-                            <path d="M0 12l12 5 12-5"/>
-                            <path d="M0 17l12 5 12-5"/>
-                        </svg>
-                        Dropbox
                     </div>
-                    <span id="dropboxStatus" class="status-badge status-disconnected">Disconnected</span>
-                </div>
-                
-                <div id="dropboxActions">
-                    <button id="dropboxConnectBtn" class="dropbox-connect-btn" onclick="connectDropbox()">Connect to Dropbox</button>
-                    <button id="dropboxDisconnectBtn" class="disconnect-btn" onclick="disconnectDropbox()" style="display: none;">Disconnect</button>
-                </div>
-                
-                <div id="dropboxFileOps" style="display: none;">
-                    <div class="file-upload">
-                        <input type="file" id="dropboxFileInput" class="file-input" onchange="uploadToDropbox()">
-                        <button class="dropbox-upload-btn" onclick="document.getElementById('dropboxFileInput').click()">
-                            📁 Upload File
-                        </button>
-                        <button class="dropbox-list-btn" onclick="listDropboxFiles()">
-                            📋 List Files
-                        </button>
-                    </div>
-                    <div id="dropboxFileList" class="file-list" style="display: none;"></div>
-                </div>
-            </div>
-            
-            <div class="service-card">
-                <div class="service-header">
-                    <div class="service-title">
-                        <svg class="service-icon" viewBox="0 0 24 24" fill="#0078d4">
-                            <path d="M12 1.25c5.5 0 10 4.5 10 10s-4.5 10-10 10-10-4.5-10-10 4.5-10 10-10z"/>
-                        </svg>
-                        OneDrive
-                    </div>
-                    <span id="onedriveStatus" class="status-badge status-disconnected">Disconnected</span>
-                </div>
-                
-                <div id="onedriveActions">
-                    <button id="onedriveConnectBtn" class="onedrive-connect-btn" onclick="connectOneDrive()">Connect to OneDrive</button>
-                    <button id="onedriveDisconnectBtn" class="disconnect-btn" onclick="disconnectOneDrive()" style="display: none;">Disconnect</button>
-                </div>
-                
-                <div id="onedriveFileOps" style="display: none;">
-                    <div class="file-upload">
-                        <input type="file" id="onedriveFileInput" class="file-input" onchange="uploadToOneDrive()">
-                        <button class="onedrive-upload-btn" onclick="document.getElementById('onedriveFileInput').click()">
-                            📁 Upload File
-                        </button>
-                        <button class="onedrive-list-btn" onclick="listOneDriveFiles()">
-                            📋 List Files
-                        </button>
-                    </div>
-                    <div id="onedriveFileList" class="file-list" style="display: none;"></div>
                 </div>
             </div>
         </div>
     </div>
     
-    <script src="js/dashboard.js"></script>
-</body>
-</html> 
+    
+        <script src="js/dashboard.js"></script>
+    <script>
+        let lastStatusState = {};
+        
+        // Function to update authentication badges based on cloud service status
+        function updateAuthBadges() {
+            const googleStatus = document.getElementById('googleStatus');
+            const dropboxStatus = document.getElementById('dropboxStatus');
+            const onedriveStatus = document.getElementById('onedriveStatus');
+            
+            // Check if elements exist and have content
+            if (!googleStatus || !dropboxStatus || !onedriveStatus) {
+                return;
+            }
+            
+            const googleConnected = googleStatus.className.includes('status-connected');
+            const dropboxConnected = dropboxStatus.className.includes('status-connected');
+            const onedriveConnected = onedriveStatus.className.includes('status-connected');
+            
+            // Create current state
+            const currentState = {
+                google: googleConnected,
+                dropbox: dropboxConnected,
+                onedrive: onedriveConnected
+            };
+            
+            // Only update if state has changed
+            if (JSON.stringify(currentState) === JSON.stringify(lastStatusState)) {
+                return;
+            }
+            
+            lastStatusState = currentState;
+            
+            const googleAuthBadge = document.getElementById('googleAuthBadge');
+            const dropboxAuthBadge = document.getElementById('dropboxAuthBadge');
+            const onedriveAuthBadge = document.getElementById('onedriveAuthBadge');
+            
+            const authRequiredText = document.getElementById('authRequiredText');
+            
+            // Update badges based on connection status
+            if (googleAuthBadge) {
+                googleAuthBadge.className = googleConnected ? 'auth-badge google connected' : 'auth-badge google';
+            }
+            
+            if (dropboxAuthBadge) {
+                dropboxAuthBadge.className = dropboxConnected ? 'auth-badge dropbox connected' : 'auth-badge dropbox';
+            }
+            
+            if (onedriveAuthBadge) {
+                onedriveAuthBadge.className = onedriveConnected ? 'auth-badge onedrive connected' : 'auth-badge onedrive';
+            }
+            
+            // Update the text based on what's missing
+            const missing = [];
+            if (!googleConnected) missing.push('Google Drive');
+            if (!dropboxConnected) missing.push('Dropbox');
+            if (!onedriveConnected) missing.push('OneDrive');
+            
+            if (authRequiredText) {
+                if (missing.length === 0) {
+                    authRequiredText.innerHTML = '<strong>All services are connected!</strong>';
+                } else {
+                    authRequiredText.innerHTML = 'Please authenticate with: <strong>' + missing.join(', ') + '</strong>';
+                }
+            }
+        }
+        
+        // Start monitoring when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Wait for dashboard.js to initialize
+            setTimeout(function() {
+                updateAuthBadges();
+                // Check for changes every 2 seconds
+                setInterval(updateAuthBadges, 2000);
+            }, 3000);
+        });
+    </script>
+  </body>
+  </html> 
