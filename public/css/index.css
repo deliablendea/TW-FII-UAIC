@@ -1,0 +1,406 @@
+/* Index Page Styles - 200vh total height */
+
+/* Content container */
+.index__content {
+    width: 100%;
+    min-height: 200vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* First section - 50vh violet */
+.index__violet-section {
+    position: relative;
+    width: 100%;
+    min-height: 50vh;
+    height: 50vh;
+    background: #674DFF;
+    display: flex;
+}
+
+/* Violet section content */
+.index__violet-content {
+    text-align: left;
+    color: white;
+    z-index: 3;
+    padding: 2rem 4rem;
+}
+
+.index__title {
+    font-family: 'Montserrat', sans-serif;
+    color: #FFFFFF;
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+.index__description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 650px;
+}
+
+.index__description strong {
+    font-weight: 600;
+}
+
+/* Cloud images positioned at bottom of violet section */
+.index__cloud-left {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 20rem;
+    height: 120px;
+    z-index: 2;
+}
+
+.index__cloud-right {
+    position: absolute;
+    bottom: -10px;
+    right: 0;
+    width: 40rem;
+    height: 200px;
+    z-index: 2;
+}
+
+/* Second section - 150vh white */
+.index__white-section {
+    width: 100%;
+    min-height: 150vh;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem 2rem;
+}
+
+/* White section content */
+.index__white-content {
+    display: flex;
+    max-width: 1200px;
+    width: 100%;
+    gap: 4rem;
+    align-items: flex-start;
+}
+
+/* Features section (left side) */
+.index__features-section {
+    flex: 1;
+}
+
+.index__section-header {
+    margin-bottom: 3rem;
+}
+
+.index__section-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.index__section-subtitle {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+}
+
+/* Feature items */
+.index__feature {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    align-items: flex-start;
+}
+
+.index__feature-icon {
+    flex-shrink: 0;
+}
+
+.index__feature-icon img {
+    width: 100px;
+    height: auto;
+}
+
+.index__feature-content h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 0.8rem;
+    line-height: 1.4;
+}
+
+.index__feature-description {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 0.8rem;
+}
+
+.index__feature-description:last-child {
+    margin-bottom: 0;
+}
+
+/* Services section */
+.index__services-section {
+    margin-top: 3rem;
+}
+
+.index__services-title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.index__services-icons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.index__service-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.index__service-icon:hover {
+    transform: translateY(-5px);
+}
+
+.index__service-icon img {
+    width: 40px;
+    height: 40px;
+}
+
+/* Image section (right side) */
+.index__image-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.index__main-image {
+    width: 100%;
+    max-width: 500px;
+    height: auto;
+}
+
+/* Remove any default margins/padding that might interfere */
+.faqs-page .index__content {
+    margin: 0;
+    padding: 0;
+}
+
+/* Ensure the page can scroll the full 200vh */
+body.faqs-page {
+    min-height: 200vh;
+}
+
+/* Reset any faqs content styling for index page */
+.faqs-page .index__content .faqs__content {
+    display: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .index__violet-section {
+        min-height: 60vh;
+        padding: 2rem 1.5rem;
+    }
+    
+    .index__title {
+        font-size: 1.8rem;
+    }
+    
+    .index__description {
+        font-size: 0.95rem;
+        max-width: 500px;
+    }
+    
+    .index__cloud-left {
+        width: 12rem;
+        height: 75px;
+    }
+    
+    .index__cloud-right {
+        width: 25rem;
+        height: 125px;
+    }
+    
+    /* White section responsive */
+    .index__white-section {
+        min-height: auto;
+        padding: 3rem 1.5rem;
+    }
+    
+    .index__white-content {
+        flex-direction: column;
+        gap: 2rem;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .index__section-title {
+        font-size: 1.4rem;
+    }
+    
+    .index__feature-content h3 {
+        font-size: 1.1rem;
+    }
+    
+    .index__feature-description {
+        font-size: 0.9rem;
+    }
+    
+    .index__services-icons {
+        gap: 1.5rem;
+        justify-content: center;
+    }
+    
+    .index__service-icon {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .index__service-icon img {
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Center the main image - last position */
+    .index__image-section {
+        order: 1;
+        width: 100%;
+        max-width: 350px;
+        margin-top: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .index__violet-section {
+        min-height: 60vh;
+        padding: 1rem 0.8rem;
+    }
+    
+    .index__violet-content {
+        padding: 1.5rem 2rem;
+    }
+    
+    .index__title {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.2;
+    }
+    
+    .index__description {
+        font-size: 0.75rem;
+        max-width: 350px;
+        line-height: 1.4;
+    }
+    
+    .index__cloud-left {
+        width: 10rem;
+        height: 60px;
+    }
+    
+    .index__cloud-right {
+        width: 20rem;
+        height: 100px;
+    }
+    
+    /* White section mobile */
+    .index__white-section {
+        min-height: auto;
+        padding: 1.5rem 0.8rem;
+    }
+    
+    .index__section-title {
+        font-size: 1rem;
+        line-height: 1.3;
+        margin-bottom: 0.3rem;
+    }
+    
+    .index__section-subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .index__feature {
+        gap: 0.8rem;
+        text-align: left;
+        margin-bottom: 1.5rem;
+    }
+    
+    .index__feature-icon img {
+        width: auto;
+        height: 30px;
+    }
+    
+    .index__feature-content h3 {
+        font-size: 0.9rem;
+        margin-bottom: 0.4rem;
+        line-height: 1.3;
+    }
+    
+    .index__feature-description {
+        font-size: 0.75rem;
+        line-height: 1.4;
+        margin-bottom: 0.6rem;
+    }
+    
+    .index__services-section {
+        margin-top: 1.5rem;
+    }
+    
+    .index__services-title {
+        font-size: 0.85rem;
+        margin-bottom: 0.8rem;
+        line-height: 1.3;
+    }
+    
+    .index__services-icons {
+        gap: 0.8rem;
+        justify-content: center;
+    }
+    
+    .index__service-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .index__service-icon img {
+        width: 30px;
+        height: 30px;
+    }
+    
+    /* Main image positioning on mobile - last position */
+    .index__image-section {
+        order: 1;
+        width: 100%;
+        max-width: 280px;
+        margin-top: 1rem;
+    }
+}
+
+ 
