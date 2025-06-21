@@ -1,4 +1,3 @@
-<<<<<<< Updated upstream
 let fragmentationAuthStatus = null;
 let selectedFragmentationFile = null;
 
@@ -7,11 +6,6 @@ let currentGooglePath = 'root';
 let currentDropboxPath = '';
 let currentOneDrivePath = '';
 let onedriveNavigationStack = []; // Stack to track OneDrive folder navigation
-=======
-
-let fragmentationAuthStatus = null;
-let selectedFragmentationFile = null;
->>>>>>> Stashed changes
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard loading...');
@@ -27,7 +21,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setupFragmentationFileUpload();
         setupFragmentationStatusRefresh();
     }, 1000);
-<<<<<<< Updated upstream
     
     // Add delete account form handler
     const deleteAccountForm = document.getElementById('deleteAccountForm');
@@ -57,8 +50,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
-=======
->>>>>>> Stashed changes
 });
 
 function checkUserSession() {
@@ -812,7 +803,6 @@ function displayOneDriveFiles(files) {
     fileList.innerHTML = html;
 }
 
-<<<<<<< Updated upstream
 // OneDrive rename function
 function renameOneDriveFile(fileId, newName, originalName) {
     if (!newName || newName.trim() === '') {
@@ -891,8 +881,6 @@ function deleteOneDriveFile(fileId, fileName) {
     });
 }
 
-=======
->>>>>>> Stashed changes
 // Fragmentation System Functions
 function checkFragmentationAuthStatus() {
     fetch('../api/fragmentation.php?action=status')
@@ -1402,7 +1390,6 @@ function escapeHtml(text) {
     return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
-<<<<<<< Updated upstream
 // Universal rename helper functions
 function startRename(service, fileId, originalName, element) {
     const nameSpan = document.getElementById(`${service}-name-${fileId}`);
@@ -1609,5 +1596,3 @@ function getNavigationBar(service) {
         </div>
     `;
 }
-=======
->>>>>>> Stashed changes
