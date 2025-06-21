@@ -70,14 +70,17 @@ class OneDriveService {
         ];
     }
     
-    public function listFiles($userId, $path = '') {
+    public function listFiles($userId, $path = '', $folderId = null) {
         $token = $this->getValidToken($userId);
         if (!$token) {
             return ['success' => false, 'message' => 'No valid OneDrive token found'];
         }
         
         // Construct the list URL
-        if (empty($path) || $path === '/') {
+        if ($folderId) {
+            // Use folder ID for navigation
+            $url = OneDriveConfig::API_URL . '/me/drive/items/' . urlencode($folderId) . '/children';
+        } elseif (empty($path) || $path === '/') {
             $url = OneDriveConfig::API_URL . '/me/drive/root/children';
         } else {
             $url = OneDriveConfig::API_URL . '/me/drive/root:/' . urlencode(trim($path, '/')) . ':/children';

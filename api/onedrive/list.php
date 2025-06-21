@@ -21,8 +21,9 @@ try {
     $onedriveService = new OneDriveService($db->getConnection());
     $userId = $_SESSION['user_id'];
     $path = $_GET['path'] ?? '';
+    $folderId = $_GET['folderId'] ?? null;
     
-    $result = $onedriveService->listFiles($userId, $path);
+    $result = $onedriveService->listFiles($userId, $path, $folderId);
     echo json_encode($result);
     
 } catch (Exception $e) {
