@@ -5,6 +5,17 @@ document.addEventListener('DOMContentLoaded', function() {
     const resetPasswordForm = document.getElementById('resetPasswordForm');
     const messageDiv = document.getElementById('message');
     
+    // Handle input focus effects
+    const inputs = document.querySelectorAll('.reset__input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            this.closest('.reset__field').classList.add('reset__field--focused');
+        });
+        
+        input.addEventListener('blur', function() {
+            this.closest('.reset__field').classList.remove('reset__field--focused');
+        });
+    });
     
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
@@ -14,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-   
+    // Validate token
     validateToken(token);
     
     resetPasswordForm.addEventListener('submit', function(e) {
@@ -39,11 +50,14 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        
-        const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
+        // Show loading state
+        const submitBtn = resetPasswordForm.querySelector('.reset__button');
         const originalText = submitBtn.textContent;
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Resetting...';
+        submitBtn.textContent = 'RESETTING PASSWORD...';
+        
+        // Clear any previous messages
+        hideMessage();
         
         fetch('../api/auth/reset_password.php', {
             method: 'POST',
@@ -52,16 +66,16 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showMessage(data.message, 'success');
+                showMessage('Password reset successfully! Redirecting to login...', 'success');
                 setTimeout(() => {
                     window.location.href = 'login.html';
                 }, 3000);
             } else {
-                showMessage(data.message, 'error');
+                showMessage(data.message || 'Password reset failed. Please try again.', 'error');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Reset password error:', error);
             showMessage('An error occurred. Please try again.', 'error');
         })
         .finally(() => {
@@ -81,7 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            console.error('Token validation error:', error);
             showError('Failed to validate reset token');
         });
     }
@@ -90,10 +104,10 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingMessage.style.display = 'none';
         resetForm.style.display = 'block';
         
-        // Update form subtitle with user info
-        const subtitle = resetForm.querySelector('.subtitle');
+        // Update form description with user info
+        const description = resetForm.querySelector('.reset__description');
         if (user && user.name) {
-            subtitle.textContent = `Hello ${user.name}, enter your new password below`;
+            description.textContent = `Hello ${user.name}, enter your new password below`;
         }
     }
     
@@ -102,17 +116,37 @@ document.addEventListener('DOMContentLoaded', function() {
         errorMessage.style.display = 'block';
         
         if (message !== 'This reset link is invalid or has expired') {
-            errorMessage.querySelector('.subtitle').textContent = message;
+            const description = errorMessage.querySelector('.reset__description');
+            if (description) {
+                description.textContent = message;
+            }
         }
     }
     
-    function showMessage(text, type) {
-        messageDiv.textContent = text;
-        messageDiv.className = 'message ' + type;
-        messageDiv.style.display = 'block';
-        
-        setTimeout(() => {
-            messageDiv.style.display = 'none';
-        }, 8000);
+    function showMessage(message, type) {
+        messageDiv.textContent = message;
+        messageDiv.className = `reset__message reset__message--${type} reset__message--show`;
     }
+    
+    function hideMessage() {
+        messageDiv.className = 'reset__message';
+    }
+    
+    // Auto-hide messages after 8 seconds
+    let messageTimeout;
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.target.classList.contains('reset__message--show')) {
+                clearTimeout(messageTimeout);
+                messageTimeout = setTimeout(() => {
+                    hideMessage();
+                }, 8000);
+            }
+        });
+    });
+    
+    observer.observe(messageDiv, {
+        attributes: true,
+        attributeFilter: ['class']
+    });
 }); 
