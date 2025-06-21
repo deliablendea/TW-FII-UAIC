@@ -107,6 +107,76 @@ class AuthController {
         }
     }
     
+    public function deleteAccount() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            return $this->jsonView->render(['success' => false, 'message' => 'Method not allowed'], 405);
+        }
+        
+        session_start();
+        
+        if (!isset($_SESSION['user_id'])) {
+            return $this->jsonView->render(['success' => false, 'message' => 'User not logged in'], 401);
+        }
+        
+        $userId = $_SESSION['user_id'];
+        $password = $_POST['password'] ?? '';
+        $confirmation = $_POST['confirmation'] ?? '';
+        
+        // Validate input
+        if (empty($password)) {
+            return $this->jsonView->render(['success' => false, 'message' => 'Password is required for account deletion']);
+        }
+        
+        if ($confirmation !== 'DELETE') {
+            return $this->jsonView->render(['success' => false, 'message' => 'Please type "DELETE" to confirm account deletion']);
+        }
+        
+        // Get user data and verify password
+        $user = $this->userModel->findById($userId);
+        if (!$user) {
+            return $this->jsonView->render(['success' => false, 'message' => 'User not found']);
+        }
+        
+        if (!$this->userModel->verifyPassword($password, $user['password_hash'])) {
+            return $this->jsonView->render(['success' => false, 'message' => 'Invalid password']);
+        }
+        
+        try {
+            // Delete account and all associated data
+            $result = $this->userModel->deleteAccount($userId);
+            
+            if ($result['success']) {
+                // Destroy session
+                session_destroy();
+                
+                if (ini_get("session.use_cookies")) {
+                    $params = session_get_cookie_params();
+                    setcookie(session_name(), '', time() - 42000,
+                        $params["path"], $params["domain"],
+                        $params["secure"], $params["httponly"]
+                    );
+                }
+                
+                return $this->jsonView->render([
+                    'success' => true, 
+                    'message' => 'Account deleted successfully. We\'re sorry to see you go!'
+                ]);
+            } else {
+                return $this->jsonView->render([
+                    'success' => false, 
+                    'message' => $result['message'] ?? 'Failed to delete account'
+                ]);
+            }
+            
+        } catch (Exception $e) {
+            error_log("Account deletion error: " . $e->getMessage());
+            return $this->jsonView->render([
+                'success' => false, 
+                'message' => 'An error occurred while deleting your account. Please try again.'
+            ]);
+        }
+    }
+    
     private function startSession($user) {
         session_start();
         $_SESSION['user_id'] = $user['id'];

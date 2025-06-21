@@ -16,7 +16,50 @@
                 <p>Logged in as: <span id="userName"></span></p>
                 <p>Email: <span id="userEmail"></span></p>
             </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
+            <div class="user-actions">
+                <button class="logout-btn" onclick="logout()">Logout</button>
+                <button class="delete-account-btn" onclick="showDeleteAccountModal()">Delete Account</button>
+            </div>
+        </div>
+        
+        <!-- Delete Account Modal -->
+        <div id="deleteAccountModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>⚠️ Delete Account</h2>
+                    <span class="close" onclick="hideDeleteAccountModal()">&times;</span>
+                </div>
+                <div class="modal-body">
+                    <div class="warning-box">
+                        <h3>⚠️ This action cannot be undone!</h3>
+                        <p>Deleting your account will permanently remove:</p>
+                        <ul>
+                            <li>Your user profile and login credentials</li>
+                            <li>All cloud service connections (Google Drive, Dropbox, OneDrive)</li>
+                            <li>All fragmented files and their chunks from cloud storage</li>
+                            <li>All file management history and metadata</li>
+                        </ul>
+                        <p><strong>This action is irreversible. Please make sure you have backed up any important data.</strong></p>
+                    </div>
+                    
+                    <form id="deleteAccountForm">
+                        <div class="form-group">
+                            <label for="deletePassword">Enter your password to confirm:</label>
+                            <input type="password" id="deletePassword" name="password" required placeholder="Your current password">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="deleteConfirmation">Type "DELETE" to confirm:</label>
+                            <input type="text" id="deleteConfirmation" name="confirmation" required placeholder="Type DELETE here">
+                        </div>
+                        
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="hideDeleteAccountModal()">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Delete My Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
         
         <div id="alerts"></div>

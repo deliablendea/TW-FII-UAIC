@@ -15,6 +15,35 @@ document.addEventListener('DOMContentLoaded', function() {
         setupFragmentationFileUpload();
         setupFragmentationStatusRefresh();
     }, 1000);
+    
+    // Add delete account form handler
+    const deleteAccountForm = document.getElementById('deleteAccountForm');
+    if (deleteAccountForm) {
+        deleteAccountForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleDeleteAccount();
+        });
+    }
+    
+    // Close modal when clicking outside
+    const modal = document.getElementById('deleteAccountModal');
+    if (modal) {
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                hideDeleteAccountModal();
+            }
+        });
+    }
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('deleteAccountModal');
+            if (modal && modal.style.display === 'flex') {
+                hideDeleteAccountModal();
+            }
+        }
+    });
 });
 
 function checkUserSession() {
@@ -1360,3 +1389,79 @@ function handleRenameKeydown(event, service, fileId, originalName, filePath = nu
     }
 }
 
+// Delete Account Functions
+function showDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+}
+
+function hideDeleteAccountModal() {
+    document.getElementById('deleteAccountModal').style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restore scrolling
+    
+    // Clear form
+    document.getElementById('deleteAccountForm').reset();
+}
+
+function handleDeleteAccount() {
+    const password = document.getElementById('deletePassword').value;
+    const confirmation = document.getElementById('deleteConfirmation').value;
+    const submitBtn = document.querySelector('#deleteAccountForm button[type="submit"]');
+    
+    // Validate inputs
+    if (!password) {
+        showAlert('Please enter your password', 'error');
+        return;
+    }
+    
+    if (confirmation !== 'DELETE') {
+        showAlert('Please type "DELETE" exactly to confirm', 'error');
+        return;
+    }
+    
+    // Show confirmation dialog
+    if (!confirm('Are you absolutely sure you want to delete your account? This action cannot be undone and will permanently remove all your data.')) {
+        return;
+    }
+    
+    // Disable submit button and show loading state
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Deleting Account...';
+    
+    const formData = new FormData();
+    formData.append('password', password);
+    formData.append('confirmation', confirmation);
+    
+    fetch('../api/auth/delete_account.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showAlert(data.message, 'success');
+            
+            // Hide modal and show final message
+            hideDeleteAccountModal();
+            
+            // Show a final farewell message
+            setTimeout(() => {
+                alert('Your account has been successfully deleted. You will now be redirected to the home page.');
+                window.location.href = 'login.html';
+            }, 2000);
+            
+        } else {
+            showAlert(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Delete account error:', error);
+        showAlert('An error occurred while deleting your account. Please try again.', 'error');
+    })
+    .finally(() => {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+    });
+}
