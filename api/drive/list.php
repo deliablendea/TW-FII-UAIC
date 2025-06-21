@@ -15,9 +15,10 @@ try {
         exit;
     }
     
-    // Get pagination parameters
+    // Get pagination and folder parameters
     $pageSize = isset($_GET['pageSize']) ? (int)$_GET['pageSize'] : 10;
     $pageToken = $_GET['pageToken'] ?? null;
+    $folderId = $_GET['folderId'] ?? null;
     
     // Validate page size
     if ($pageSize < 1 || $pageSize > 100) {
@@ -28,8 +29,8 @@ try {
     $db = Database::getInstance();
     $driveService = new GoogleDriveService($db->getConnection(), $_SESSION['user_id']);
     
-    // List files from Google Drive
-    $result = $driveService->listFiles($pageSize, $pageToken);
+    // List files from Google Drive with optional folder filter
+    $result = $driveService->listFiles($pageSize, $pageToken, $folderId);
     
     if ($result['success']) {
         echo json_encode($result);

@@ -1,6 +1,12 @@
 let fragmentationAuthStatus = null;
 let selectedFragmentationFile = null;
 
+// Navigation tracking variables
+let currentGooglePath = 'root';
+let currentDropboxPath = '';
+let currentOneDrivePath = '';
+let onedriveNavigationStack = []; // Stack to track OneDrive folder navigation
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Dashboard loading...');
     checkUserSession();
@@ -204,12 +210,25 @@ function uploadToGoogle() {
     });
 }
 
-function listGoogleFiles() {
+function listGoogleFiles(folderId = null) {
     const fileList = document.getElementById('googleFileList');
     fileList.innerHTML = '<div class="loading">Loading files...</div>';
     fileList.style.display = 'block';
     
-    fetch('../api/drive/list.php?pageSize=20')
+    // Update current path
+    if (folderId) {
+        currentGooglePath = folderId;
+    } else {
+        currentGooglePath = 'root';
+    }
+    
+    // Build URL with folder parameter
+    let url = '../api/drive/list.php?pageSize=20';
+    if (folderId && folderId !== 'root') {
+        url += `&folderId=${encodeURIComponent(folderId)}`;
+    }
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -228,27 +247,33 @@ function displayGoogleFiles(files) {
     const fileList = document.getElementById('googleFileList');
     
     if (!files || files.length === 0) {
-        fileList.innerHTML = '<div class="loading">No files found</div>';
+        fileList.innerHTML = getNavigationBar('google') + '<div class="loading">No files found</div>';
         return;
     }
     
-    let html = '';
+    let html = getNavigationBar('google');
     files.forEach(file => {
         const size = file.size ? formatFileSize(parseInt(file.size)) : 'Unknown size';
         const modifiedDate = file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : 'Unknown date';
+        const isFolder = file.mimeType === 'application/vnd.google-apps.folder';
+        const fileIcon = isFolder ? '📁' : '📄';
         
         html += `
             <div class="file-item">
                 <div class="file-info">
                     <div class="file-name-container">
-                        <span class="file-name" id="google-name-${file.id}" onclick="startRename('google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)">${escapeHtml(file.name)}</span>
-                        <input type="text" class="file-name-input" id="google-input-${file.id}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('google', '${file.id}')" onkeydown="handleRenameKeydown(event, 'google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">
+                        <span class="file-name ${isFolder ? 'folder-name' : ''}" 
+                              id="google-name-${file.id}" 
+                              ${isFolder ? `onclick="navigateToGoogleFolder('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')"` : `onclick="startRename('google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)"`}>
+                            ${fileIcon} ${escapeHtml(file.name)}
+                        </span>
+                        ${!isFolder ? `<input type="text" class="file-name-input" id="google-input-${file.id}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('google', '${file.id}')" onkeydown="handleRenameKeydown(event, 'google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">` : ''}
                     </div>
                     <div class="file-details">
-                        Size: ${size} | Modified: ${modifiedDate}
+                        Type: ${isFolder ? 'Folder' : 'File'} | Size: ${size} | Modified: ${modifiedDate}
                         ${file.webViewLink ? ` | <a href="${file.webViewLink}" target="_blank">View in Drive</a>` : ''}
-                        | <button class="rename-btn" onclick="startRename('google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>
-                        | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>
+                        ${!isFolder ? ` | <button class="rename-btn" onclick="startRename('google', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
+                        ${!isFolder ? ` | <button class="delete-btn" onclick="deleteGoogleFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -449,12 +474,21 @@ function uploadToDropbox() {
     });
 }
 
-function listDropboxFiles() {
+function listDropboxFiles(path = '') {
     const fileList = document.getElementById('dropboxFileList');
     fileList.innerHTML = '<div class="loading">Loading files...</div>';
     fileList.style.display = 'block';
     
-    fetch('../api/dropbox/list.php')
+    // Update current path
+    currentDropboxPath = path;
+    
+    // Build URL with path parameter
+    let url = '../api/dropbox/list.php';
+    if (path) {
+        url += `?path=${encodeURIComponent(path)}`;
+    }
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -473,30 +507,36 @@ function displayDropboxFiles(files) {
     const fileList = document.getElementById('dropboxFileList');
     
     if (!files || files.length === 0) {
-        fileList.innerHTML = '<div class="loading">No files found</div>';
+        fileList.innerHTML = getNavigationBar('dropbox') + '<div class="loading">No files found</div>';
         return;
     }
     
-    let html = '';
+    let html = getNavigationBar('dropbox');
     files.forEach((file, index) => {
         const size = file.size ? formatFileSize(parseInt(file.size)) : 'Unknown size';
         const modifiedDate = file.modified ? new Date(file.modified).toLocaleDateString() : 'Unknown date';
-        const fileTypeIcon = file.type === 'folder' ? '📁' : '📄';
+        const isFolder = file.type === 'folder';
+        const fileTypeIcon = isFolder ? '📁' : '📄';
         const safeId = `dropbox-${index}-${Date.now()}`;
         
         html += `
             <div class="file-item">
                 <div class="file-info">
                     <div class="file-name-container">
-                        <span class="file-name" id="dropbox-name-${safeId}" onclick="startRename('dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)" data-path="${escapeHtml(file.path)}">${fileTypeIcon} ${escapeHtml(file.name)}</span>
-                        <input type="text" class="file-name-input" id="dropbox-input-${safeId}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('dropbox', '${safeId}')" onkeydown="handleRenameKeydown(event, 'dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">
+                        <span class="file-name ${isFolder ? 'folder-name' : ''}" 
+                              id="dropbox-name-${safeId}" 
+                              ${isFolder ? `onclick="navigateToDropboxFolder('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')"` : `onclick="startRename('dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)"`}
+                              ${!isFolder ? `data-path="${escapeHtml(file.path)}"` : ''}>
+                            ${fileTypeIcon} ${escapeHtml(file.name)}
+                        </span>
+                        ${!isFolder ? `<input type="text" class="file-name-input" id="dropbox-input-${safeId}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('dropbox', '${safeId}')" onkeydown="handleRenameKeydown(event, 'dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">` : ''}
                     </div>
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
-                        ${file.type !== 'folder' ? ` | <a href="https://www.dropbox.com/home${file.path}" target="_blank">View in Dropbox</a>` : ''}
-                        ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="startRename('dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
-                        ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
+                        ${!isFolder ? ` | <a href="https://www.dropbox.com/home${file.path}" target="_blank">View in Dropbox</a>` : ''}
+                        ${!isFolder ? ` | <button class="rename-btn" onclick="startRename('dropbox', '${safeId}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
+                        ${!isFolder ? ` | <button class="delete-btn" onclick="deleteDropboxFile('${escapeHtml(file.path).replace(/'/g, "\\'")}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -687,12 +727,27 @@ function uploadToOneDrive() {
     });
 }
 
-function listOneDriveFiles() {
+function listOneDriveFiles(pathOrFolderId = '') {
     const fileList = document.getElementById('onedriveFileList');
     fileList.innerHTML = '<div class="loading">Loading files...</div>';
     fileList.style.display = 'block';
     
-    fetch('../api/onedrive/list.php')
+    // Update current path
+    currentOneDrivePath = pathOrFolderId;
+    
+    // Build URL with path or folderId parameter
+    let url = '../api/onedrive/list.php';
+    if (pathOrFolderId) {
+        // Check if it's a folder ID (contains letters/numbers) or a path (contains slashes)
+        if (pathOrFolderId.includes('/') || pathOrFolderId === '') {
+            url += `?path=${encodeURIComponent(pathOrFolderId)}`;
+        } else {
+            // It's a folder ID
+            url += `?folderId=${encodeURIComponent(pathOrFolderId)}`;
+        }
+    }
+    
+    fetch(url)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
@@ -711,29 +766,34 @@ function displayOneDriveFiles(files) {
     const fileList = document.getElementById('onedriveFileList');
     
     if (!files || files.length === 0) {
-        fileList.innerHTML = '<div class="loading">No files found</div>';
+        fileList.innerHTML = getNavigationBar('onedrive') + '<div class="loading">No files found</div>';
         return;
     }
     
-    let html = '';
+    let html = getNavigationBar('onedrive');
     files.forEach(file => {
         const size = file.size ? formatFileSize(parseInt(file.size)) : 'Unknown size';
         const modifiedDate = file.modified ? new Date(file.modified).toLocaleDateString() : 'Unknown date';
-        const fileTypeIcon = file.type === 'folder' ? '📁' : '📄';
+        const isFolder = file.type === 'folder';
+        const fileTypeIcon = isFolder ? '📁' : '📄';
         
         html += `
             <div class="file-item">
                 <div class="file-info">
                     <div class="file-name-container">
-                        <span class="file-name" id="onedrive-name-${file.id}" onclick="startRename('onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)">${fileTypeIcon} ${escapeHtml(file.name)}</span>
-                        <input type="text" class="file-name-input" id="onedrive-input-${file.id}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('onedrive', '${file.id}')" onkeydown="handleRenameKeydown(event, 'onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">
+                        <span class="file-name ${isFolder ? 'folder-name' : ''}" 
+                              id="onedrive-name-${file.id}" 
+                              ${isFolder ? `onclick="navigateToOneDriveFolder('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')" data-folder-id="${file.id}"` : `onclick="startRename('onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}', this)"`}>
+                            ${fileTypeIcon} ${escapeHtml(file.name)}
+                        </span>
+                        ${!isFolder ? `<input type="text" class="file-name-input" id="onedrive-input-${file.id}" value="${escapeHtml(file.name)}" style="display: none;" onblur="cancelRename('onedrive', '${file.id}')" onkeydown="handleRenameKeydown(event, 'onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">` : ''}
                     </div>
                     <div class="file-details">
                         Type: ${file.type} | Size: ${size} | Modified: ${modifiedDate}
                         <br>Path: ${escapeHtml(file.path)}
                         ${file.web_url ? ` | <a href="${file.web_url}" target="_blank">View in OneDrive</a>` : ''}
-                        ${file.type !== 'folder' ? ` | <button class="rename-btn" onclick="startRename('onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
-                        ${file.type !== 'folder' ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
+                        ${!isFolder ? ` | <button class="rename-btn" onclick="startRename('onedrive', '${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">✏️ Rename</button>` : ''}
+                        ${!isFolder ? ` | <button class="delete-btn" onclick="deleteOneDriveFile('${file.id}', '${escapeHtml(file.name).replace(/'/g, "\\'")}')">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
             </div>
@@ -1464,4 +1524,75 @@ function handleDeleteAccount() {
         submitBtn.disabled = false;
         submitBtn.textContent = originalText;
     });
+}
+
+// Folder navigation functions
+function navigateToGoogleFolder(folderId, folderName) {
+    console.log('Navigating to Google folder:', folderName, 'ID:', folderId);
+    listGoogleFiles(folderId);
+}
+
+function navigateToDropboxFolder(folderPath, folderName) {
+    console.log('Navigating to Dropbox folder:', folderName, 'Path:', folderPath);
+    listDropboxFiles(folderPath);
+}
+
+function navigateToOneDriveFolder(folderId, folderName) {
+    console.log('Navigating to OneDrive folder:', folderName, 'ID:', folderId);
+    // Push current location to navigation stack
+    onedriveNavigationStack.push({
+        id: currentOneDrivePath || 'root',
+        name: currentOneDrivePath ? 'Previous Folder' : 'Root'
+    });
+    listOneDriveFiles(folderId);
+}
+
+function goBack(service) {
+    if (service === 'google') {
+        if (currentGooglePath !== 'root') {
+            // For simplicity, go back to root. In a more advanced implementation,
+            // you'd maintain a path stack
+            listGoogleFiles('root');
+        }
+    } else if (service === 'dropbox') {
+        if (currentDropboxPath) {
+            const parentPath = currentDropboxPath.split('/').slice(0, -1).join('/');
+            listDropboxFiles(parentPath);
+        }
+    } else if (service === 'onedrive') {
+        if (onedriveNavigationStack.length > 0) {
+            const previousLocation = onedriveNavigationStack.pop();
+            listOneDriveFiles(previousLocation.id === 'root' ? '' : previousLocation.id);
+        }
+    }
+}
+
+function getNavigationBar(service) {
+    let currentPath = '';
+    let serviceName = '';
+    
+    if (service === 'google') {
+        currentPath = currentGooglePath === 'root' ? 'Root' : 'Subfolder';
+        serviceName = 'Google Drive';
+    } else if (service === 'dropbox') {
+        currentPath = currentDropboxPath || 'Root';
+        serviceName = 'Dropbox';
+    } else if (service === 'onedrive') {
+        currentPath = onedriveNavigationStack.length > 0 ? 'Subfolder' : 'Root';
+        serviceName = 'OneDrive';
+    }
+    
+    const showBackButton = (service === 'google' && currentGooglePath !== 'root') ||
+                          (service === 'dropbox' && currentDropboxPath !== '') ||
+                          (service === 'onedrive' && onedriveNavigationStack.length > 0);
+    
+    return `
+        <div class="navigation-bar">
+            <div class="breadcrumb">
+                <span class="service-name">${serviceName}:</span>
+                <span class="current-path">📁 ${currentPath}</span>
+            </div>
+            ${showBackButton ? `<button class="back-btn" onclick="goBack('${service}')">⬅️ Back</button>` : ''}
+        </div>
+    `;
 }

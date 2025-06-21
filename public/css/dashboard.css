@@ -196,349 +196,197 @@
 .file-item {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
     transition: all 0.3s ease;
 }
 
 .file-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
-.file-info h4 {
-    margin: 0 0 10px 0;
-    color: white;
-    font-weight: 600;
-}
-
-.file-meta {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 14px;
-}
-
-.file-actions {
+.file-info {
     display: flex;
+    flex-direction: column;
     gap: 10px;
-    flex-wrap: wrap;
-}
-
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    overflow: hidden;
-    margin: 10px 0;
-}
-
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #48bb78, #38a169);
-    transition: width 0.3s ease;
-    border-radius: 10px;
-}
-
-.provider-status {
-    display: flex;
-    gap: 15px;
-    margin: 20px 0;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.provider {
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-size: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.provider.connected { 
-    background: rgba(72, 187, 120, 0.8); 
-    color: white;
-    box-shadow: 0 3px 10px rgba(72, 187, 120, 0.3);
-}
-
-.provider.disconnected { 
-    background: rgba(245, 101, 101, 0.8); 
-    color: white;
-    box-shadow: 0 3px 10px rgba(245, 101, 101, 0.3);
-}
-
-.loading {
-    text-align: center;
-    padding: 20px;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.error {
-    color: #fed7d7;
-    background: rgba(245, 101, 101, 0.2);
-    border: 1px solid rgba(245, 101, 101, 0.3);
-    padding: 15px;
-    border-radius: 10px;
-    margin: 15px 0;
-}
-
-.success {
-    color: #c6f6d5;
-    background: rgba(72, 187, 120, 0.2);
-    border: 1px solid rgba(72, 187, 120, 0.3);
-    padding: 15px;
-    border-radius: 10px;
-    margin: 15px 0;
-}
-
-/* Cloud Services Grid */
-.cloud-services {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px;
-    margin-top: 30px;
-}
-
-.service-card {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
-}
-
-.service-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.service-title {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 1.5em;
-    font-weight: 600;
-}
-
-.service-icon {
-    width: 32px;
-    height: 32px;
-}
-
-.status-badge {
-    padding: 5px 12px;
-    border-radius: 20px;
-    font-size: 0.8em;
-    font-weight: 600;
-}
-
-.status-connected {
-    background: #c6f6d5;
-    color: #22543d;
-}
-
-.status-disconnected {
-    background: #fed7d7;
-    color: #742a2a;
-}
-
-.connect-btn, .upload-btn, .list-btn {
-    background: #4285f4;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    margin: 5px;
-}
-
-.connect-btn:hover, .upload-btn:hover, .list-btn:hover {
-    background: #3367d6;
-}
-
-.dropbox-connect-btn, .dropbox-upload-btn, .dropbox-list-btn {
-    background: #0061ff;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    margin: 5px;
-}
-
-.dropbox-connect-btn:hover, .dropbox-upload-btn:hover, .dropbox-list-btn:hover {
-    background: #0051d4;
-}
-
-.onedrive-connect-btn, .onedrive-upload-btn, .onedrive-list-btn {
-    background: #0078d4;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    margin: 5px;
-}
-
-.onedrive-connect-btn:hover, .onedrive-upload-btn:hover, .onedrive-list-btn:hover {
-    background: #106ebe;
-}
-
-.disconnect-btn {
-    background: #dc3545;
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    margin: 5px;
-}
-
-.disconnect-btn:hover {
-    background: #c82333;
-}
-
-.file-upload {
-    margin: 20px 0;
-}
-
-.file-input {
-    display: none;
-}
-
-.file-list {
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    margin-top: 20px;
-}
-
-.service-file-item {
-    padding: 15px;
-    border-bottom: 1px solid #e2e8f0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.service-file-item:last-child {
-    border-bottom: none;
-}
-
-.service-file-info {
-    flex: 1;
-}
-
-.file-name {
-    font-weight: 600;
-    margin-bottom: 5px;
-}
-
-.file-details {
-    font-size: 0.8em;
-    color: #718096;
-}
-
-.delete-btn {
-    background: #dc3545;
-    color: white;
-    padding: 4px 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.75em;
-    font-weight: 600;
-    margin-left: 8px;
-    transition: background-color 0.2s ease;
-}
-
-.delete-btn:hover {
-    background: #c82333;
-}
-
-.delete-btn:active {
-    transform: scale(0.95);
-}
-
-.rename-btn {
-    background: #ffc107;
-    color: #212529;
-    padding: 4px 8px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.75em;
-    font-weight: 600;
-    margin-left: 8px;
-    transition: background-color 0.2s ease;
-}
-
-.rename-btn:hover {
-    background: #e0a800;
-}
-
-.rename-btn:active {
-    transform: scale(0.95);
 }
 
 .file-name-container {
-    position: relative;
-    display: inline-block;
-    min-width: 200px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .file-name {
+    font-weight: 500;
+    font-size: 16px;
+    color: #ffffff;
     cursor: pointer;
-    padding: 2px 4px;
-    border-radius: 3px;
-    transition: background-color 0.2s ease;
+    transition: color 0.3s ease;
 }
 
 .file-name:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    color: #4fc3f7;
+}
+
+.folder-name {
+    color: #ffd54f !important;
+    font-weight: 600;
+}
+
+.folder-name:hover {
+    color: #ffeb3b !important;
+    text-decoration: underline;
 }
 
 .file-name-input {
-    background: white;
-    border: 2px solid #4285f4;
+    padding: 5px 10px;
+    border: 2px solid #2196f3;
     border-radius: 4px;
-    padding: 2px 6px;
-    font-size: inherit;
-    font-family: inherit;
-    font-weight: 600;
-    outline: none;
-    min-width: 150px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    font-size: 14px;
+    min-width: 200px;
 }
 
 .file-name-input:focus {
-    border-color: #3367d6;
-    box-shadow: 0 2px 8px rgba(66, 133, 244, 0.3);
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.5);
 }
 
-.file-actions {
+.file-details {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.4;
+}
+
+.file-details a {
+    color: #4fc3f7;
+    text-decoration: none;
+}
+
+.file-details a:hover {
+    text-decoration: underline;
+}
+
+.rename-btn, .delete-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    transition: all 0.3s ease;
+    margin: 0 2px;
+}
+
+.rename-btn {
+    background: rgba(255, 193, 7, 0.2);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.rename-btn:hover {
+    background: rgba(255, 193, 7, 0.3);
+    border-color: rgba(255, 193, 7, 0.5);
+}
+
+.delete-btn {
+    background: rgba(244, 67, 54, 0.2);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.delete-btn:hover {
+    background: rgba(244, 67, 54, 0.3);
+    border-color: rgba(244, 67, 54, 0.5);
+}
+
+/* Navigation styles */
+.navigation-bar {
     display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    backdrop-filter: blur(10px);
 }
 
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.service-name {
+    font-weight: 600;
+    color: #4fc3f7;
+    font-size: 14px;
+}
+
+.current-path {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.back-btn {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.back-btn:hover {
+    background: linear-gradient(135deg, #1976d2, #1565c0);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.back-btn:active {
+    transform: translateY(0);
+}
+
+/* File list containers */
+.file-list {
+    max-height: 400px;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 10px;
+}
+
+.file-list::-webkit-scrollbar {
+    width: 8px;
+}
+
+.file-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+.file-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+}
+
+.file-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* Progress bar for fragmentation */
 .progress-bar {
     width: 100%;
     height: 8px;
@@ -555,6 +403,7 @@
     border-radius: 10px;
 }
 
+/* Provider status */
 .provider-status {
     display: flex;
     gap: 15px;
@@ -583,6 +432,7 @@
     box-shadow: 0 3px 10px rgba(245, 101, 101, 0.3);
 }
 
+/* Loading, error, success states */
 .loading {
     text-align: center;
     padding: 20px;
@@ -731,14 +581,6 @@
 
 .file-input {
     display: none;
-}
-
-.file-list {
-    max-height: 300px;
-    overflow-y: auto;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    margin-top: 20px;
 }
 
 .service-file-item {
