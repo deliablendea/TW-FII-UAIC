@@ -104,7 +104,7 @@ class GoogleDriveService {
         }
     }
     
-    public function listFiles($pageSize = 10, $pageToken = null) {
+    public function listFiles($pageSize = 10, $pageToken = null, $parentFolderId = null) {
         $token = $this->getValidToken();
         if (!$token) {
             return ['success' => false, 'message' => 'No valid Google Drive token'];
@@ -114,6 +114,13 @@ class GoogleDriveService {
             'pageSize' => $pageSize,
             'fields' => 'nextPageToken, files(id, name, size, mimeType, createdTime, modifiedTime, webViewLink)'
         ];
+        
+        // Add parent folder filter if specified
+        if ($parentFolderId && $parentFolderId !== 'root') {
+            $params['q'] = "'{$parentFolderId}' in parents and trashed=false";
+        } else {
+            $params['q'] = "trashed=false";
+        }
         
         if ($pageToken) {
             $params['pageToken'] = $pageToken;
