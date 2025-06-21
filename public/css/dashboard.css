@@ -152,6 +152,7 @@
     background: rgba(56, 161, 105, 0.9);
 }
 
+<<<<<<< Updated upstream
 .btn-secondary {
     background: rgba(255, 255, 255, 0.2);
     color: white;
@@ -162,6 +163,8 @@
     background: rgba(255, 255, 255, 0.3);
 }
 
+=======
+>>>>>>> Stashed changes
 .form-group {
     margin-bottom: 20px;
 }
@@ -196,13 +199,24 @@
 .file-item {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
+<<<<<<< Updated upstream
     border-radius: 8px;
     padding: 15px;
     margin-bottom: 10px;
+=======
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+>>>>>>> Stashed changes
     transition: all 0.3s ease;
 }
 
 .file-item:hover {
+<<<<<<< Updated upstream
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.3);
 }
@@ -387,6 +401,29 @@
 }
 
 /* Progress bar for fragmentation */
+=======
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.file-info h4 {
+    margin: 0 0 10px 0;
+    color: white;
+    font-weight: 600;
+}
+
+.file-meta {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+>>>>>>> Stashed changes
 .progress-bar {
     width: 100%;
     height: 8px;
@@ -403,7 +440,10 @@
     border-radius: 10px;
 }
 
+<<<<<<< Updated upstream
 /* Provider status */
+=======
+>>>>>>> Stashed changes
 .provider-status {
     display: flex;
     gap: 15px;
@@ -432,7 +472,10 @@
     box-shadow: 0 3px 10px rgba(245, 101, 101, 0.3);
 }
 
+<<<<<<< Updated upstream
 /* Loading, error, success states */
+=======
+>>>>>>> Stashed changes
 .loading {
     text-align: center;
     padding: 20px;
@@ -583,6 +626,17 @@
     display: none;
 }
 
+<<<<<<< Updated upstream
+=======
+.file-list {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+>>>>>>> Stashed changes
 .service-file-item {
     padding: 15px;
     border-bottom: 1px solid #e2e8f0;
@@ -675,6 +729,7 @@
     .provider-status {
         justify-content: flex-start;
     }
+<<<<<<< Updated upstream
 }
 
 /* User Actions Styles */
@@ -914,4 +969,6 @@
         flex-direction: column;
         gap: 10px;
     }
+=======
+>>>>>>> Stashed changes
 } 

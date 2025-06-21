@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 /* Login page specific styles */
 .container {
     width: 100%;
@@ -128,3 +129,413 @@ input[type="password"]:focus {
     border: 1px solid #feb2b2;
     display: block;
 } 
+=======
+/* Login page specific styles - BEM methodology */
+.login-page {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+/* Main login container */
+.login {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+}
+
+/* Left side - Form section */
+.login__form-section {
+    flex: 1;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.login__form-container {
+    width: 100%;
+    max-width: 350px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Brand section with logo and text */
+.login__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.login__logo-image {
+    width: 200px;
+    height: 162px;
+    object-fit: contain;
+}
+
+/* Subtitle styling */
+.login__subtitle {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #7761FA;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    margin-top: -15px;
+}
+
+/* Form styling */
+.login__form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Form fields */
+.login__field {
+    width: 100%;
+}
+
+/* Input wrapper for icon positioning */
+.login__input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Input icon styling */
+.login__input-icon {
+    position: absolute;
+    left: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: #7761FA;
+    stroke-width: 2;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Input styling */
+.login__input {
+    width: 100%;
+    padding: 1.2rem 1rem 1.2rem 4rem !important;
+    border: 6px solid #7761FA;
+    border-radius: 45px !important;
+    font-size: 1rem;
+    font-weight: 400;
+    color: #7761FA;
+    background: white;
+    transition: all 0.2s ease;
+    font-family: 'Montserrat', sans-serif;
+    box-sizing: border-box;
+}
+
+.login__input::placeholder {
+    color: #7761FA;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.login__input:focus {
+    outline: 10px solid #674DFF;
+    border-color: #674DFF;
+    box-shadow: 0 0 0 10px rgba(103, 77, 255, 0.2);
+}
+
+.login__input:focus + .login__input-icon {
+    color: #674DFF;
+}
+
+/* Field focus effects */
+.login__field--focused .login__input {
+    border-color: #674DFF;
+    box-shadow: 0 0 0 10px rgba(103, 77, 255, 0.2);
+}
+
+/* Forgot password link */
+.login__forgot {
+    text-align: right;
+    margin-top: -0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.login__forgot-link {
+    color: #7761FA;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    transition: color 0.2s ease;
+}
+
+.login__forgot-link:hover {
+    color: #5B21B6;
+}
+
+/* Submit button */
+.login__button {
+    width: 200px;
+    align-self: center;
+    padding: 1rem 2rem;
+    background: #674DFF;
+    color: white;
+    border: none;
+    border-radius: 45px;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Montserrat', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+.login__button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(103, 77, 255, 0.4);
+    background: #5A3FE6;
+}
+
+.login__button:active {
+    transform: translateY(0);
+}
+
+.login__button:disabled {
+    background: linear-gradient(135deg, #A78BFA 0%, #93C5FD 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Signup section */
+.login__signup {
+    margin-top: 10px;
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.login__signup-text {
+    color: #6B7280;
+    font-size: 0.875rem;
+    font-weight: 400;
+}
+
+.login__signup-link {
+    color: #7761FA;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.login__signup-link:hover {
+    color: #5B21B6;
+}
+
+/* Message styling */
+.login__message {
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: 'Montserrat', sans-serif;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.login__message--show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.login__message--success {
+    background: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+}
+
+.login__message--error {
+    background: #FEF2F2;
+    color: #991B1B;
+    border: 1px solid #FECACA;
+}
+
+/* Right side - Background section */
+.login__background-section {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+}
+
+.login__background {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    background-image: url('../../assets/Cover.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* Fallback gradient if image doesn't load */
+    background-color: #7761FA;
+    /* Ensure proper image display */
+    min-height: 100vh;
+}
+
+/* Subtle overlay to enhance contrast */
+.login__background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Cloud decorations */
+.login__clouds {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* Cloud shapes using CSS */
+.login__clouds::before,
+.login__clouds::after {
+    content: '';
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50px;
+}
+
+.login__clouds::before {
+    width: 100px;
+    height: 40px;
+    top: 20%;
+    right: 10%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.login__clouds::after {
+    width: 80px;
+    height: 30px;
+    bottom: 30%;
+    left: 15%;
+    animation: float 8s ease-in-out infinite reverse;
+}
+
+/* Floating animation */
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+@media (max-height: 1100px) and (max-width: 850px) {
+    .login__subtitle {
+        margin-top: -5px;
+    }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .login {
+        flex-direction: column;
+        height: 100vh;
+    }
+    
+    .login__background-section {
+        order: 1;
+        flex: none;
+        height: 25vh;
+        min-height: 180px;
+    }
+    
+    .login__form-section {
+        order: 2;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        min-height: 0;
+    }
+    
+    .login__form-container {
+        max-width: 100%;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .login__brand {
+        margin-bottom: 1.5rem;
+    }
+    
+    .login__logo-image {
+        width: 100px;
+        height: 81px;
+    }
+    
+    .login__subtitle {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 600px) and (min-width: 481px) {
+    .login__background-section {
+        height: 20vh;
+        min-height: 150px;
+    }
+    
+    .login__logo-image {
+        width: 90px;
+        height: 73px;
+    }
+}
+
+@media (max-width: 480px) {
+    .login__background-section {
+        height: 18vh;
+        min-height: 130px;
+    }
+    
+    .login__form-section {
+        padding: 1rem;
+    }
+    
+    .login__brand {
+        margin-bottom: 1rem;
+    }
+    
+    .login__logo-image {
+        width: 80px;
+        height: 65px;
+    }
+    
+    .login__subtitle {
+        font-size: 0.95rem;
+    }
+}
+>>>>>>> Stashed changes
